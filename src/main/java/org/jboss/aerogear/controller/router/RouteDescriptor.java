@@ -17,6 +17,7 @@
 
 package org.jboss.aerogear.controller.router;
 
+import static org.jboss.aerogear.controller.router.parameter.Parameter.constant;
 import static org.jboss.aerogear.controller.router.parameter.Parameter.param;
 
 import java.lang.reflect.Method;
@@ -35,7 +36,7 @@ import net.sf.cglib.proxy.NoOp;
 import org.jboss.aerogear.controller.router.RouteBuilder.TargetEndpoint;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
 import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
-import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
+import org.jboss.aerogear.controller.util.RequestUtils;
 
 /**
  * Describes/configures a single route in AeroGear controller.
@@ -119,17 +120,50 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
 
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            if (method.getAnnotation(Paginated.class) != null) {
-                final Paginated paginated = method.getAnnotation(Paginated.class);
-                routeDescriptor.parameters.remove(param(PaginationInfo.class));
-                routeDescriptor.addParameter(param(paginated.offsetParamName(), String.valueOf(paginated.defaultOffset()),
-                        String.class));
-                routeDescriptor.addParameter(param(paginated.limitParamName(), String.valueOf(paginated.defaultLimit()),
-                        String.class));
-            }
             this.routeDescriptor.targetMethod = method;
             this.routeDescriptor.args = args;
+            
+            final List<Parameter<?>> methodParams = new LinkedList<Parameter<?>>();
+            processPaginatedAnnotation(method, methodParams);
+            mergeRequestParamsWithConstants(args, methodParams);
             return null;
+        }
+        
+        private void processPaginatedAnnotation(Method method, List<Parameter<?>> methodParams) {
+            if (method.getAnnotation(Paginated.class) != null) {
+                final Paginated paginated = method.getAnnotation(Paginated.class);
+                methodParams.add(param(paginated.offsetParamName(), String.valueOf(paginated.defaultOffset()), String.class));
+                methodParams.add(param(paginated.limitParamName(), String.valueOf(paginated.defaultLimit()), String.class));
+            }
+        }
+    
+        /*
+         * Request parameters represent parameters that were specified using the param("identifier")
+         * method. Those methods are called prior to this interceptor method since they are parameters
+         * to the target method. So those parameters have already been added to the underlying route descriptors
+         * parameter list. Below, we are combining those params with any constant parameter that were supplied.
+         */
+        private void mergeRequestParamsWithConstants(Object[] args, List<Parameter<?>> destination) {
+            final List<Parameter<?>> requestParams = routeDescriptor.getParameters();
+            final boolean hasRequestParams = !requestParams.isEmpty();
+            for (int i = 0, requestParam = 0; i < args.length; i++ ) {
+                final Object arg = args[i];
+                if (arg == null && hasRequestParams) {
+                    destination.add(requestParams.get(requestParam++));
+                } else {
+                    if (arg instanceof String) {
+                        final String str = (String) arg;
+                        final Set<String> extractParams = RequestUtils.extractPlaceHolders(str);
+                        if (!extractParams.isEmpty()) {
+                            destination.add(Parameter.replacementParam(str, extractParams, Set.class));
+                            continue;
+                        } 
+                    } 
+                    destination.add(constant(arg, Object.class));
+                }
+            }
+            requestParams.clear();
+            requestParams.addAll(destination);
         }
     }
 

@@ -17,6 +17,8 @@
 
 package org.jboss.aerogear.controller.router.parameter;
 
+import java.util.Set;
+
 /**
  * Parameter represents a single target endpoint method parameter.
  * 
@@ -35,9 +37,17 @@ public class Parameter<T> {
     public static <T> Parameter<T> param(final String name, final T defaultValue, final Class<T> type) {
         return new RequestParameter<T>(name, Type.REQUEST, defaultValue, type);
     }
+    
+    public static <T> Parameter<T> constant(final T value, final Class<T> type) {
+        return new ConstantParameter<T>(value, type);
+    }
+    
+    public static <T> Parameter<T> replacementParam(final String str, final Set<String> paramNames, final Class<T> type) {
+        return new ReplacementParameter<T>(str, paramNames, type);
+    }
 
     public enum Type {
-        REQUEST, ENTITY,
+        REQUEST, ENTITY, CONSTANT, REPLACEMENT
     }
 
     private final Type parameterType;

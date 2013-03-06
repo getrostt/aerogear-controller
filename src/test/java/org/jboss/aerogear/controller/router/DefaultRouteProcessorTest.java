@@ -526,6 +526,91 @@ public class DefaultRouteProcessorTest {
         assertThat(result.getResult()).isInstanceOf(MissingRequestParameterException.class);
     }    
     
+    @Test
+    public void testMvcRouteWithConstantAndPathParam() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}").roles("admin")
+                        .on(GET)
+                        .produces(JSP)
+                        .to(SampleController.class).findWithConstant("constant", param("id"));
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car/3");
+        verify(routeTester.<SampleController>getController()).findWithConstant("constant", "3");
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testMvcRouteWithPathParamAndConstant() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}").roles("admin")
+                        .on(GET)
+                        .produces(JSP)
+                        .to(SampleController.class).findWithConstantReversed(param("id"), "constant");
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car/3");
+        verify(routeTester.<SampleController>getController()).findWithConstantReversed("3", "constant");
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testMvcRouteWithMultipleConstants() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car")
+                        .on(GET)
+                        .produces(JSP)
+                        .to(SampleController.class).findWithConstantReversed("constant1", "constant2");
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car");
+        verify(routeTester.<SampleController>getController()).findWithConstantReversed("constant1", "constant2");
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testMvcRouteWithParamsInConstantString() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}")
+                        .on(GET)
+                        .produces(JSP)
+                        .to(SampleController.class).processPath("{id}?title={title}&lastname={lastname}?propertyName=value");
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car/10?title=Mr&lastname=Babar");
+        verify(routeTester.<SampleController>getController()).processPath("10?title=Mr&lastname=Babar?propertyName=value");
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testMvcRouteWithConstantWithParam() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}")
+                        .on(GET)
+                        .produces(JSP)
+                        .to(SampleController.class).processPathWithType("/remoteserver/{id}?title={title}&lastname={lastname}?propertyName=value", String.class);
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car/10?title=Mr&lastname=Babar");
+        verify(routeTester.<SampleController>getController()).processPathWithType("/remoteserver/10?title=Mr&lastname=Babar?propertyName=value", String.class);
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
     private class CustomResponder extends AbstractRestResponder {
         
         private MediaType customMediaType = new MediaType("application/custom", CustomResponder.class); 

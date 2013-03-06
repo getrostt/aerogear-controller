@@ -20,6 +20,10 @@ package org.jboss.aerogear.controller.util;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,6 +94,60 @@ public class RequestUtilsTest {
     public void extractAcceptsHeader() {
         when(request.getHeader("Accept")).thenReturn("application/json, application/xml");
         assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.getType(), "application/xml");
+    }
+    
+    @Test
+    public void extractPlaceHolders() {
+        final Set<String> params = RequestUtils.extractPlaceHolders("/cars/{color}/{brand}");
+        assertThat(params).contains("color", "brand");
+        assertThat(params.size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractPlaceHoldersWithSubpath() {
+        final Set<String> params = RequestUtils.extractPlaceHolders("/cars/{color}/subpath/{brand}");
+        assertThat(params).contains("color", "brand");
+        assertThat(params.size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractPlaceHoldersWithSubpathLast() {
+        final Set<String> params = RequestUtils.extractPlaceHolders("/cars/{color}/{brand}/subpath");
+        assertThat(params).contains("color", "brand");
+        assertThat(params.size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractPlaceHoldersNoParams() {
+        final Set<String> params = RequestUtils.extractPlaceHolders("/cars/");
+        assertThat(params).isEmpty();
+    }
+    
+    @Test
+    public void extractPlaceHoldersMultipleParams() {
+        final Set<String> params = RequestUtils.extractPlaceHolders("/cars/{id}?param1={firstname}");
+        assertThat(params).contains("id", "firstname");
+        assertThat(params.size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void injectParamValues() {
+        final String uri = "/cars/{id}?param1={firstname}";
+        final Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", 10);
+        map.put("firstname", "Fletch");
+        final String processedUri = RequestUtils.injectParamValues(uri, map);
+        assertThat(processedUri).isEqualTo("/cars/10?param1=Fletch");
+    }
+    
+    @Test
+    public void injectParamValuesWithProperties() {
+        final String uri = "/cars/{id}?param1={firstname}?propertyName=propertyValue";
+        final Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", 10);
+        map.put("firstname", "Fletch");
+        final String processedUri = RequestUtils.injectParamValues(uri, map);
+        assertThat(processedUri).isEqualTo("/cars/10?param1=Fletch?propertyName=propertyValue");
     }
 
 }
