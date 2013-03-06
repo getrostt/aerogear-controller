@@ -48,6 +48,12 @@
             <url>http://qmx.me</url>
             <email>qmx@qmx.me</email>
         </developer>
+        <developer>
+            <id>danbev</id>
+            <name>Daniel Bevenius</name>
+            <url>http://dbevenius.org</url>
+            <email>daniel.bevenius@gmail.com</email>
+        </developer>
     </developers>
 
     <scm>
