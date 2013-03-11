@@ -55,6 +55,9 @@ public class SampleController {
     public void find(String color, String brand) {
     }
 
+    public void find(Long id) {
+    }
+
     @Paginated
     public List<Integer> findBy(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);

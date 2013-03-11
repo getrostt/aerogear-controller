@@ -35,6 +35,8 @@ import org.jboss.aerogear.controller.router.parameter.RequestParameter;
 
 import javax.servlet.http.Cookie;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -50,7 +52,7 @@ public class ParameterExtractor {
      * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext}.
      * @return {@code Object[]} an array of Object matching the route targets parameters.
      */
-    public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) {
+    public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) throws Exception {
         final Map<String, Object> args = new LinkedHashMap<String, Object>();
         for (Parameter<?> parameter : routeContext.getRoute().getParameters()) {
             switch (parameter.getParameterType()) {
@@ -76,7 +78,7 @@ public class ParameterExtractor {
                     if (addIfPresent(requestParameter.getDefaultValue(), requestParameter.getName(), args)) {
                         break;
                     }
-                    if (addIfPresent(extractPathParam(routeContext), requestParameter.getName(), args)) {
+                    if (addIfPresent(extractPathParam(routeContext,parameter.getType()), requestParameter.getName(), args)) {
                         break;
                     }
                     throw ExceptionBundle.MESSAGES.missingParameterInRequest(requestParameter.getName());
@@ -100,14 +102,17 @@ public class ParameterExtractor {
     /**
      * Extracts a path parameter from the passed in request path.
      * 
+     *
      * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext} to extract a path parameter from.
+     * @param type
      * @return {@code Optional<String>} containing the extracted path param if present in the request path.
      */
-    public static Optional<String> extractPathParam(final RouteContext routeContext) {
+    public static Optional<?> extractPathParam(final RouteContext routeContext, Class<?> type) throws Exception {
         final String requestPath = routeContext.getRequestPath();
         final int paramOffset = routeContext.getRoute().getPath().indexOf('{');
         if (paramOffset != -1 && paramOffset < requestPath.length()) {
-            return Optional.of(requestPath.subSequence(paramOffset, requestPath.length()).toString());
+            String pathParam = requestPath.subSequence(paramOffset, requestPath.length()).toString();
+            return Optional.of(createInstance(type,pathParam));
         }
         return Optional.absent();
     }
@@ -173,4 +178,9 @@ public class ParameterExtractor {
         }
         return Optional.absent();
     }
-}
+
+    private static Object createInstance( Class<?> type, String arg) throws Exception {
+         Constructor constructor = type.getDeclaredConstructor(String.class);
+         return constructor.newInstance(arg);
+    }
+ }
