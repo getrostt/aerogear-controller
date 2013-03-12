@@ -36,6 +36,9 @@ public class SampleController {
     public void client(String name) {
     }
 
+    public void client(Long name) {
+    }
+
     public void lol() {
     }
 

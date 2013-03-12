@@ -153,6 +153,16 @@ public class ParametersTest {
         assertThat(args.get("name")).isEqualTo("defaultName");
     }
 
+    @Test
+    public void extractFormParamsWithDefaultValueWithType() throws Exception {
+        when(request.getParameterMap()).thenReturn(RequestParams.empty());
+        when(route.getParameters()).thenReturn(asList(Parameter.param("name", new Long(2), Long.class)));
+        when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", Long.class));
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext,
+                Collections.<String, Consumer> emptyMap());
+        assertThat(args.get("name")).isEqualTo( new Long(2));
+    }
+
     @Test(expected = RuntimeException.class)
     public void shouldThrowIfFormParamIsMissingFromRequest() throws Exception {
         when(route.getParameters()).thenReturn(asList(Parameter.param("name", null, String.class)));
@@ -213,6 +223,18 @@ public class ParametersTest {
         assertThat(args.get("year")).isEqualTo("2006");
     }
 
+    @Test
+    public void extractQueryParamsWithType() throws Exception {
+        when(request.getParameterMap()).thenReturn(RequestParams.param("price", "10").add("year", "2006").getParamMap());
+        final List<Parameter<?>> parameters = asList(Parameter.param("price", Long.class));
+        parameters.add(Parameter.param("year", Long.class));
+        when(route.getParameters()).thenReturn(parameters);
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext,
+                Collections.<String, Consumer> emptyMap());
+        assertThat(args.get("price")).isEqualTo(new Long("10"));
+        assertThat(args.get("year")).isEqualTo(new Long("2006"));
+    }
+
     @Test(expected = RuntimeException.class)
     public void shouldThrowIfQueryParamsMissingFromRequest() throws Exception {
         final List<Parameter<?>> parameters = asList(Parameter.param("brand", String.class));
@@ -235,6 +257,19 @@ public class ParametersTest {
     }
 
     @Test
+    public void extractQueryParamsWithDefaultValueWithType() throws Exception {
+        when(request.getParameterMap()).thenReturn(RequestParams.param("brand", "mini").getParamMap());
+        final List<Parameter<?>> parameters = asList(Parameter.param("brand", String.class));
+        parameters.add(Parameter.param("year", "2012", String.class));
+        when(route.getParameters()).thenReturn(parameters);
+        when(route.getParameters()).thenReturn(parameters);
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext,
+                Collections.<String, Consumer> emptyMap());
+        assertThat(args.get("brand")).isEqualTo("mini");
+        assertThat(args.get("year")).isEqualTo("2012");
+    }
+
+    @Test
     public void extractCookieParam() throws Exception {
         final Cookie cookie = mock(Cookie.class);
         when(cookie.getName()).thenReturn("testCookie");
@@ -245,6 +280,19 @@ public class ParametersTest {
         final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext,
                 Collections.<String, Consumer> emptyMap());
         assertThat(args.get("testCookie")).isEqualTo("cookieValue");
+    }
+
+    @Test
+    public void extractCookieParamWithType() throws Exception {
+        final Cookie cookie = mock(Cookie.class);
+        when(cookie.getName()).thenReturn("testCookie");
+        when(cookie.getValue()).thenReturn("2");
+        when(request.getCookies()).thenReturn(new Cookie[] { cookie });
+        final List<Parameter<?>> parameters = asList(Parameter.param("testCookie", Long.class));
+        when(route.getParameters()).thenReturn(parameters);
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext,
+                Collections.<String, Consumer> emptyMap());
+        assertThat(args.get("testCookie")).isEqualTo(new Long(2));
     }
 
     @Test(expected = RuntimeException.class)

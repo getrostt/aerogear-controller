@@ -75,7 +75,7 @@ public class ParameterExtractor {
                     if (addIfPresent(extractCookieParam(routeContext, requestParameter), requestParameter.getName(), args)) {
                         break;
                     }
-                    if (addIfPresent(requestParameter.getDefaultValue(), requestParameter.getName(), args)) {
+                    if (addIfPresent(extractDefaultParam(requestParameter), requestParameter.getName(), args)) {
                         break;
                     }
                     if (addIfPresent(extractPathParam(routeContext,parameter.getType()), requestParameter.getName(), args)) {
@@ -85,6 +85,13 @@ public class ParameterExtractor {
             }
         }
         return args;
+    }
+
+    private static Optional<?> extractDefaultParam(RequestParameter<?> requestParameter) throws Exception {
+       if(requestParameter.getDefaultValue().isPresent())  {
+           return Optional.of(createInstance(requestParameter.getType(), requestParameter.getDefaultValue().get().toString()));
+       }
+       return requestParameter.getDefaultValue();
     }
 
     private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter,
@@ -151,27 +158,30 @@ public class ParameterExtractor {
         return false;
     }
 
-    private static Optional<?> extractHeaderParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
-        return Optional.fromNullable(routeContext.getRequest().getHeader(parameter.getName()));
+    private static Optional<?> extractHeaderParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
+        if(routeContext.getRequest().getHeader(parameter.getName()) != null){
+            return Optional.fromNullable(createInstance(parameter.getType(),routeContext.getRequest().getHeader(parameter.getName())));
+        }
+        return Optional.absent();
     }
 
-    private static Optional<?> extractCookieParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
+    private static Optional<?> extractCookieParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
         final Cookie[] cookies = routeContext.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(parameter.getName())) {
-                    return Optional.fromNullable(cookie.getValue());
+                    return Optional.fromNullable(createInstance(parameter.getType(),cookie.getValue()));
                 }
             }
         }
         return Optional.absent();
     }
 
-    private static Optional<?> extractParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
+    private static Optional<?> extractParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
         final String[] values = routeContext.getRequest().getParameterMap().get(parameter.getName());
         if (values != null) {
             if (values.length == 1) {
-                return Optional.of(values[0]);
+                return Optional.of(createInstance(parameter.getType(), values[0]));
             } else {
                 throw ExceptionBundle.MESSAGES.multivaluedParamsUnsupported(parameter.getName());
             }
@@ -180,7 +190,7 @@ public class ParameterExtractor {
     }
 
     private static Object createInstance( Class<?> type, String arg) throws Exception {
-         Constructor constructor = type.getDeclaredConstructor(String.class);
-         return constructor.newInstance(arg);
+        Constructor constructor = type.getDeclaredConstructor(String.class);
+        return constructor.newInstance(arg);
     }
  }
