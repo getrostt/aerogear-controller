@@ -124,11 +124,15 @@ public class CorsConfig implements CorsConfiguration {
 
     @Override
     public String toString() {
-        return new StringBuilder("CorsConfiguration[").append("corsSupportEnabled=").append(corsSupportEnabled)
-                .append(", exposeHeaders=").append(exposeHeaders).append(", anyOrigin=").append(anyOrigin)
-                .append(", allowCookies=").append(allowCookies).append(", maxAge=").append(maxAge)
-                .append(", validRequestHeaders=").append(validRequestHeaders).append(", validRequestMethods=")
-                .append(validRequestMethods).append("]").toString();
+        return new StringBuilder("CorsConfiguration[")
+                .append("corsSupportEnabled=").append(corsSupportEnabled)
+                .append(", exposeHeaders=").append(exposeHeaders)
+                .append(", anyOrigin=").append(anyOrigin)
+                .append(", allowCookies=").append(allowCookies)
+                .append(", maxAge=").append(maxAge)
+                .append(", validRequestHeaders=").append(validRequestHeaders)
+                .append(", validRequestMethods=").append(validRequestMethods)
+                .append("]").toString();
     }
 
     public interface SupportedOptions {

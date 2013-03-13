@@ -63,8 +63,11 @@ public class RequestParameter<T> extends Parameter<T> {
 
     @Override
     public String toString() {
-        return new StringBuilder("RequestParameter[name=").append(name).append(", parameterType=").append(getParameterType())
-                .append(", type=").append(getType()).append(", defaultValue=").append(defaultValue).append("]").toString();
+        return new StringBuilder("RequestParameter[name=").append(name)
+                .append(", parameterType=").append(getParameterType())
+                .append(", type=").append(getType())
+                .append(", defaultValue=").append(defaultValue)
+                .append("]").toString();
     }
 
 }

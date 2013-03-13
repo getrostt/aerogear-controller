@@ -21,7 +21,7 @@ package org.jboss.aerogear.controller.router.rest.pagination;
  */
 public class RequestPathParser {
 
-    private PaginationInfo pgInfo;
+    private final PaginationInfo pgInfo;
     private final String requestPath;
 
     public RequestPathParser(final PaginationInfo paginationInfo, final String requestPath) {

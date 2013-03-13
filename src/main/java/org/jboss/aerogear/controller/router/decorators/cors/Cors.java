@@ -36,7 +36,10 @@ import com.google.common.collect.Iterables;
 public class Cors {
 
     public enum RequestHeader {
-        ORIGIN("Origin"), OPTIONS("OPTIONS"), METHOD("Access-Control-Request-Method"), HEADERS("Access-Control-Request-Headers");
+        ORIGIN("Origin"), 
+        OPTIONS("OPTIONS"), 
+        METHOD("Access-Control-Request-Method"), 
+        HEADERS("Access-Control-Request-Headers");
 
         private final String headerName;
 
@@ -51,9 +54,12 @@ public class Cors {
     }
 
     public enum ResponseHeader {
-        ALLOW_ORIGIN("Access-Control-Allow-Origin"), ALLOW_CREDENTIALS("Access-Control-Allow-Credentials"), EXPOSE_HEADERS(
-                "Access-Control-Expose-Headers"), ALLOW_METHODS("Access-Control-Allow-Methods"), MAX_AGE(
-                "Access-Control-Max-Age"), ALLOW_HEADERS("Access-Control-Allow-Headers");
+        ALLOW_ORIGIN("Access-Control-Allow-Origin"), 
+        ALLOW_CREDENTIALS("Access-Control-Allow-Credentials"), 
+        EXPOSE_HEADERS("Access-Control-Expose-Headers"), 
+        ALLOW_METHODS("Access-Control-Allow-Methods"), 
+        MAX_AGE("Access-Control-Max-Age"), 
+        ALLOW_HEADERS("Access-Control-Allow-Headers");
 
         private final String headerName;
 

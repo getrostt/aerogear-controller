@@ -24,8 +24,8 @@ import javax.inject.Inject;
  */
 public class EndpointInvoker {
 
-    private BeanManager beanManager;
-    private ControllerFactory controllerFactory;
+    private final BeanManager beanManager;
+    private final ControllerFactory controllerFactory;
 
     @Inject
     public EndpointInvoker(final ControllerFactory controllerFactory, final BeanManager beanManager) {

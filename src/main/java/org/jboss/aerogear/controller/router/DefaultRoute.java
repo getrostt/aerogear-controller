@@ -153,10 +153,14 @@ public class DefaultRoute implements Route {
 
     @Override
     public String toString() {
-        return new StringBuilder("DefaultRoute[").append("path=").append(path).append(", targetClass=").append(targetClass)
-                .append(", targetMethod=").append(targetMethod).append(", produces=").append(produces).append(", parameters=")
-                .append(parameters).append(", roles=").append(roles).append(", throwables=").append(throwables).append("]")
-                .toString();
+        return new StringBuilder("DefaultRoute[").append("path=").append(path)
+                .append(", targetClass=").append(targetClass)
+                .append(", targetMethod=").append(targetMethod)
+                .append(", produces=").append(produces)
+                .append(", parameters=").append(parameters)
+                .append(", roles=").append(roles)
+                .append(", throwables=").append(throwables)
+                .append("]").toString();
     }
 
     private Set<RequestMethod> asSet(final RequestMethod[] methods) {
