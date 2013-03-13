@@ -1,6 +1,6 @@
 # AeroGear Controller - very lean mvc controller
-[AeroGear](http://aerogear.org) Controller is a very lean mvc controller written in Java. It focuses on the routing of HTTP request to plain Java object endpoint
-and the handling of the results, by either forwarding the data to a view, or returning the data in the format requested by the caller.
+[AeroGear](http://aerogear.org) Controller is a very lean model view controller written in Java. It focuses on the routing of HTTP request to plain Java object endpoint
+and the handling of the returned result. The result of an invocation is either forwarded to a view, or returned in the format requested by the caller.
 
 ## Installation
 1. Add the following maven dependency
@@ -8,7 +8,7 @@ and the handling of the results, by either forwarding the data to a view, or ret
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aerogear-controller</artifactId>
-            <version>1.0.0.CR1</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
         
@@ -49,7 +49,7 @@ and the handling of the results, by either forwarding the data to a view, or ret
             </body>
         </html>
         
-For information about creating RESTful routes, please refer to the [user guide]((http://aerogear.org/docs/guides/aerogear-controller/).
+For information about creating RESTful routes, please refer to the [user guide](http://aerogear.org/docs/guides/aerogear-controller/).
         
 ### Populating parameters
 
@@ -79,6 +79,8 @@ The car object will be automatically populated with the provided values - note t
 
 All the intermediate objects are created automatically.  
   
+This was only a small portion of the features that are available in AeroGear Controller, please refer to the 
+[user guide](http://aerogear.org/docs/guides/aerogear-controller/) for more information.  
 
 ## Documentation
 * [User Guide](http://aerogear.org/docs/guides/aerogear-controller/)
@@ -94,3 +96,4 @@ All the intermediate objects are created automatically.
 
 ## Examples
 * [aerogear-controller-demo](https://github.com/aerogear/aerogear-controller-demo) 
+* [todo](https://github.com/aerogear/TODO) 
