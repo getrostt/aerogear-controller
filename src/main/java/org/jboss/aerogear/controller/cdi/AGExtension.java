@@ -26,7 +26,7 @@ import org.jboss.aerogear.controller.log.LoggerMessages;
 import org.jboss.aerogear.controller.router.Responder;
 
 /**
- * AGExtention is a CDI extension that verifies that {@link Responder} implementations in AeroGear Controller
+ * AGExtension is a CDI extension that verifies that {@link Responder} implementations in AeroGear Controller
  * have a no-args constructor.
  * </p>
  * If a {@code Responder} implementation does not have a no-args constructor an error upon deployment will be raised
