@@ -22,7 +22,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
-import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.log.ExceptionBundle;
 import org.jboss.aerogear.controller.router.Responder;
 
 /**
@@ -43,7 +43,7 @@ public class AGExtension implements Extension {
                 try {
                     javaClass.getConstructor(new Class[] {});
                 } catch (final NoSuchMethodException e) {
-                    throw LoggerMessages.MESSAGES.responderDoesNotHaveNoArgsCtor(javaClass);
+                    throw ExceptionBundle.MESSAGES.responderDoesNotHaveNoArgsCtor(javaClass);
                 }
             }
         }

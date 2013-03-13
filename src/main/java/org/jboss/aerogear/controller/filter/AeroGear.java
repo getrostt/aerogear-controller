@@ -17,7 +17,7 @@
 
 package org.jboss.aerogear.controller.filter;
 
-import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.log.ExceptionBundle;
 import org.jboss.aerogear.controller.router.Router;
 
 import javax.inject.Inject;
@@ -44,7 +44,7 @@ public class AeroGear implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
         if (isHttpServletContainer(request, response)) {
-            throw LoggerMessages.MESSAGES.mustRunInsideAContainer();
+            throw ExceptionBundle.MESSAGES.mustRunInsideAContainer();
         }
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;

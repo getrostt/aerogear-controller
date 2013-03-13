@@ -16,7 +16,7 @@
  */
 package org.jboss.aerogear.controller.router.rest.pagination;
 
-import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.log.ExceptionBundle;
 
 import com.google.common.base.Optional;
 
@@ -43,7 +43,7 @@ public class PaginationProperties {
 
     private void checkValues(final int offset, final int limit) {
         if (offset < 0 || limit <= 0) {
-            throw LoggerMessages.MESSAGES.invalidPagingRequest(offset, limit);
+            throw ExceptionBundle.MESSAGES.invalidPagingRequest(offset, limit);
         }
     }
 

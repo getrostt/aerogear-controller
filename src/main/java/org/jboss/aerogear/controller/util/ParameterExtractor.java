@@ -25,7 +25,7 @@ import br.com.caelum.iogi.util.NullDependencyProvider;
 import com.google.common.base.Optional;
 
 import org.jboss.aerogear.controller.log.AeroGearLogger;
-import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.log.ExceptionBundle;
 import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
@@ -79,7 +79,7 @@ public class ParameterExtractor {
                     if (addIfPresent(extractPathParam(routeContext), requestParameter.getName(), args)) {
                         break;
                     }
-                    throw LoggerMessages.MESSAGES.missingParameterInRequest(requestParameter.getName());
+                    throw ExceptionBundle.MESSAGES.missingParameterInRequest(requestParameter.getName());
             }
         }
         return args;
@@ -94,7 +94,7 @@ public class ParameterExtractor {
                 return consumer.unmarshall(routeContext.getRequest(), parameter.getType());
             }
         }
-        throw LoggerMessages.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
+        throw ExceptionBundle.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
     }
 
     /**
@@ -168,7 +168,7 @@ public class ParameterExtractor {
             if (values.length == 1) {
                 return Optional.of(values[0]);
             } else {
-                throw LoggerMessages.MESSAGES.multivaluedParamsUnsupported(parameter.getName());
+                throw ExceptionBundle.MESSAGES.multivaluedParamsUnsupported(parameter.getName());
             }
         }
         return Optional.absent();
