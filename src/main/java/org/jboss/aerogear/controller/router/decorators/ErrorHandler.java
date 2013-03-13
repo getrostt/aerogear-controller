@@ -37,9 +37,11 @@ import org.jboss.aerogear.controller.spi.HttpStatusAwareException;
 import com.google.common.base.Throwables;
 
 /**
- * ErrorHandler is a CDI Decorator that decorates a {@link RouteProcessor}. </p> By wrapping the call to
- * {@link RouteProcessor#process(RouteContext)} with a try catch block, this class will handle any exception thrown and either
- * forward to a the appropriate error route configured, or if no error route exists, forward to the default error view.
+ * ErrorHandler is a CDI Decorator that decorates a {@link RouteProcessor}. 
+ * </p> 
+ * By wrapping the call to {@link RouteProcessor#process(RouteContext)} with a try catch block, this class will handle any 
+ * exception thrown and either forward to a the appropriate error route configured, or if no error route exists, forward to 
+ * the default error view.
  */
 @Decorator
 public class ErrorHandler implements RouteProcessor {

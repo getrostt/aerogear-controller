@@ -33,7 +33,8 @@ public interface CorsConfiguration {
     boolean isCorsSupportEnabled();
 
     /**
-     * Determines if there are any headers configured to be exposed to calling clients. </p>
+     * Determines if there are any headers configured to be exposed to calling clients. 
+     * </p>
      * 
      * @see #getExposeHeaders()
      * 
@@ -42,8 +43,9 @@ public interface CorsConfiguration {
     boolean exposeHeaders();
 
     /**
-     * Returns a comma separated string of headers to be exposed to calling clients. </p> During a simple CORS request only
-     * certain response headers are made available to a calling client:
+     * Returns a comma separated string of headers to be exposed to calling clients. 
+     * </p> 
+     * During a simple CORS request only certain response headers are made available to a calling client:
      * <ul>
      * <li>Cache-Control</li>
      * <li>Content-Language</li>
@@ -52,7 +54,8 @@ public interface CorsConfiguration {
      * <li>Last-Modified</li>
      * <li>Pragma</li>
      * </ul>
-     * To expose other headers they need to be specified which what this method enables. </p>
+     * To expose other headers they need to be specified which what this method enables. 
+     * </p>
      * 
      * @return {@code String} a comma separated string of headers to be exposed.
      */
@@ -66,8 +69,9 @@ public interface CorsConfiguration {
     boolean anyOrigin();
 
     /**
-     * Determines if cookies are supported. </p> By default cookies are not included in CORS requests if allowCookies is true
-     * cookies will be added to CORS requests.
+     * Determines if cookies are supported. 
+     * </p> 
+     * By default cookies are not included in CORS requests if allowCookies is true cookies will be added to CORS requests.
      * 
      * @return {@code true} if cookies are supported.
      */
@@ -83,9 +87,11 @@ public interface CorsConfiguration {
     boolean hasMaxAge();
 
     /**
-     * Gets the maxAge setting. </p> When making a preflight request the client has to perform two request with can be
-     * inefficient. This setting enables the caching of the preflight response for the specified time. During this time no
-     * preflight request will be made. </p>
+     * Gets the maxAge setting. 
+     * </p> 
+     * When making a preflight request the client has to perform two request with can be inefficient. This setting enables the 
+     * caching of the preflight response for the specified time. During this time no preflight request will be made. 
+     * </p>
      * 
      * @return {@code long} the time in seconds that a preflight request may be cached.
      */

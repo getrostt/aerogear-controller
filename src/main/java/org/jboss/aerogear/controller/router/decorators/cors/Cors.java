@@ -82,8 +82,9 @@ public class Cors {
     }
 
     /**
-     * Determines if the current {@link HttpServletRequest} is a CORS request. </p> See <a
-     * href="http://www.w3.org/TR/cors/#http-origin">http-origin</a> section of the specification.
+     * Determines if the current {@link HttpServletRequest} is a CORS request. 
+     * </p> 
+     * See <a href="http://www.w3.org/TR/cors/#http-origin">http-origin</a> section of the specification.
      * 
      * @return {@code true} if the current request has an 'Origin' request header, otherwise false.
      */
@@ -92,8 +93,10 @@ public class Cors {
     }
 
     /**
-     * Determines if this instance can handle CORS requests. </p> This is simply a convenience method and is the equivalent of
-     * calling {@link Cors#isCorsSupportEnabled()} && {@link Cors#isCorsRequest()}
+     * Determines if this instance can handle CORS requests. 
+     * </p> 
+     * This is simply a convenience method and is the equivalent of calling {@link Cors#isCorsSupportEnabled()} 
+     * && {@link Cors#isCorsRequest()}
      * 
      * @return {@code true} is CORS support has been enabled and if the current request is a CORS request.
      * 
@@ -130,8 +133,9 @@ public class Cors {
     }
 
     /**
-     * Determines if the current {@link HttpServletRequest} qualifies as a 'Preflight' request. </p> See <a
-     * href="http://www.w3.org/TR/cors/#preflight-request">preflight-request</a> section of the specification.
+     * Determines if the current {@link HttpServletRequest} qualifies as a 'Preflight' request. 
+     * </p> 
+     * See <a href="http://www.w3.org/TR/cors/#preflight-request">preflight-request</a> section of the specification.
      * 
      * @return {@code true} if the current request qualifies as a preflight, otherwise false.
      */
@@ -271,8 +275,9 @@ public class Cors {
     }
 
     /**
-     * Set the {@link ResponseHeader#EXPOSE_HEADERS} to the the configured comma separated list of headers. </p> During a simple
-     * CORS request only certain response headers are made available to a calling client:
+     * Set the {@link ResponseHeader#EXPOSE_HEADERS} to the the configured comma separated list of headers. 
+     * </p> 
+     * During a simple CORS request only certain response headers are made available to a calling client:
      * <ul>
      * <li>Cache-Control</li>
      * <li>Content-Language</li>
@@ -281,7 +286,8 @@ public class Cors {
      * <li>Last-Modified</li>
      * <li>Pragma</li>
      * </ul>
-     * To expose other headers they need to be specified which what this method enables. </p>
+     * To expose other headers they need to be specified which what this method enables. 
+     * </p>
      * 
      * @param response the {@link HttpServletResponse} for which the response header ResponseHeader#EXPOSE_HEADERS should be
      *        set.
@@ -312,9 +318,11 @@ public class Cors {
     }
 
     /**
-     * Set the {@link ResponseHeader#MAX_AGE} to the configured max age value. </p> When making a preflight request the client
-     * has to perform two request with can be inefficient. This setting enables the caching of the preflight response for the
-     * specified time. During this time no preflight request will be made. </p>
+     * Set the {@link ResponseHeader#MAX_AGE} to the configured max age value. 
+     * </p> 
+     * When making a preflight request the client has to perform two request with can be inefficient. This setting enables 
+     * the caching of the preflight response for the specified time. During this time no preflight request will be made. 
+     * </p>
      * 
      * @param response the {@link HttpServletResponse} for which the response header ResponseHeader.MAX_AGE should be set.
      * @return {@code Cors} to support methods chaining.

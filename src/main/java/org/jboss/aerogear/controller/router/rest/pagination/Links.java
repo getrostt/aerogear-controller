@@ -19,8 +19,9 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 import com.google.common.base.Optional;
 
 /**
- * Links are a part of the metadata related to paging of fetched data. </p> Links are used to navigate the the first, previous,
- * next, or last set of data.
+ * Links are a part of the metadata related to paging of fetched data. 
+ * </p> 
+ * Links are used to navigate the the first, previous, next, or last set of data.
  */
 public class Links {
 

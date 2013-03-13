@@ -18,7 +18,8 @@
 package org.jboss.aerogear.controller.router;
 
 /**
- * A RoutingModule is used by the AeroGear runtime to retrieve the routes defined by the current application. </p>
+ * A RoutingModule is used by the AeroGear runtime to retrieve the routes defined by the current application. 
+ * </p>
  * 
  * End users may implement this interface directly or use {@link AbstractRoutingModule} which has convenience methods.
  * 

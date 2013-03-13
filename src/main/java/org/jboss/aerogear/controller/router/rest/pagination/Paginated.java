@@ -70,9 +70,9 @@ public @interface Paginated {
     int defaultLimit() default 10;
 
     /**
-     * The prefix to be used when custom HTTP response headers are used to provide link to next/previous. </p> For example, if
-     * you specify the prefix as 'XYZ-" the following response headers could possibly be returned:
-     * 
+     * The prefix to be used when custom HTTP response headers are used to provide link to next/previous. 
+     * </p> 
+     * For example, if you specify the prefix as 'XYZ-" the following response headers could possibly be returned:
      * <pre>
      * XYZ-Links-Next "http://server/app/resource?offset=5?limit=5"
      * XYZ-Links-Previous "http://server/app/resource?offset=0?limit=5"

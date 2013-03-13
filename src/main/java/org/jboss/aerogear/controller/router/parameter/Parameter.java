@@ -43,15 +43,33 @@ public class Parameter<T> {
     private final Type parameterType;
     private final Class<T> type;
 
+    /**
+     * Sole constructor.
+     * 
+     * @param parameterType the {@link Type} of request parameter.
+     * @param type the expected type of the value of the request parameter. 
+     */
     public Parameter(final Type parameterType, final Class<T> type) {
         this.parameterType = parameterType;
         this.type = type;
     }
 
+    /**
+     * Gets the {@link Type} of this parameter. The parameter migth come from a request query param, a form param,
+     * a header param, a cookie param, or could be in the body of the request.
+     * 
+     * @return {@code Type} the {@link Type} of this parameter.
+     */
     public Type getParameterType() {
         return parameterType;
     }
 
+    /**
+     * Gets the type of this parameter. This is the type of the value of the {@link Type}, for example the {@code Type} might
+     * be a query param (REQUEST) and the value of that query param might be of type String.class.
+     * 
+     * @return {@code Class} the class type of this parameter.
+     */
     public Class<?> getType() {
         return type;
     }

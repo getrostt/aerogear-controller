@@ -19,15 +19,34 @@ package org.jboss.aerogear.controller.router.parameter;
 
 import com.google.common.base.Optional;
 
+/**
+ * A RequestParameter is a parameter that comes from the request, for example a query, form, cookie, header, or path parameter.
+ */
 public class RequestParameter<T> extends Parameter<T> {
 
     private final String name;
     private final Optional<T> defaultValue;
 
+    /**
+     * Constructs a RequestParameter with a name, {@code Paramter.Type}, and specifies the type of the value in the parameter.
+     * 
+     * @param name the name of this parameter, the name of the query, form, cookie, header, or path parameter.
+     * @param parameterType the {@code Parameter.Type} of this parameter.
+     * @param type the class type of this parameter.
+     */
     public RequestParameter(final String name, final Type parameterType, final Class<T> type) {
         this(name, parameterType, null, type);
     }
 
+    /**
+     * Constructs a RequestParameter with a name, {@code Parameter.Type}, and specifies the type of the value in the parameter and allows
+     * for a default value to be specified which will be used if the parameter is missing from the request.
+     * 
+     * @param name the name of this parameter, the name of the query, form, cookie, header, or path parameter.
+     * @param parameterType the {@code Parameter.Type} of this parameter.
+     * @param defaultValue the value to be used if this parameter, identified by {@code name}, is missing from the request.
+     * @param type the class type of this parameter.
+     */
     public RequestParameter(final String name, final Type parameterType, final T defaultValue, final Class<T> type) {
         super(parameterType, type);
         this.name = name;

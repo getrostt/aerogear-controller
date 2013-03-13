@@ -19,9 +19,11 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 import com.google.common.base.Optional;
 
 /**
- * Holds information related to pagination in AeroGear Controller. </p> The parameter names will be provided using the
- * {@code Paginated} annotation and the values will be the values contained in the current request. If the configured parameters
- * are missing from the request, the default values specified in {@link Paginated} will be used.
+ * Holds information related to pagination in AeroGear Controller. 
+ * </p> 
+ * The parameter names will be provided using the {@code Paginated} annotation and the values will be the values contained in 
+ * the current request. If the configured parameters are missing from the request, the default values specified in 
+ * {@link Paginated} will be used.
  * 
  * @see Paginated
  */

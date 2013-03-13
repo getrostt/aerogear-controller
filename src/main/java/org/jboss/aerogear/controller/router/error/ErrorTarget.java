@@ -29,6 +29,7 @@ public class ErrorTarget {
      * Simply logs the exception thrown.
      * 
      * @param throwable the error to be logged.
+     * @return {@code Throwable} simply passes through throwable instance passed in.
      */
     public Throwable error(final Throwable throwable) {
         AeroGearLogger.LOGGER.routeCatchAllException(throwable, throwable.getMessage());

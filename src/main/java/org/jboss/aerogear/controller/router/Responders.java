@@ -44,10 +44,11 @@ public class Responders {
     }
 
     /**
-     * Responds to the Route in the passed-in RouteContext using an appropriate Responder. </p> The {@link Responder} used to
-     * respond is determined by inspecting the HTTP Accept header values and matching these with the media types that the Route
-     * is capable of producing ({@link Route#produces()}) <br>
-     * If no match is found for the values in the Accept header, or if the Accept header was empty of "*&#47;*" then any
+     * Responds to the Route in the passed-in RouteContext using an appropriate Responder. 
+     * </p> 
+     * The {@link Responder} used to respond is determined by inspecting the HTTP Accept header values and matching these with 
+     * the media types that the Route is capable of producing ({@link Route#produces()}) <br>
+     * If no match is found for the values in the Accept header, or if the Accept header was empty or "*&#47;*" then any
      * Responder that accepts "*&#47;*" will be used to respond.
      * 
      * @param routeContext the current route context

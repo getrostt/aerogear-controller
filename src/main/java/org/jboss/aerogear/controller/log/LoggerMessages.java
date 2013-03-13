@@ -35,8 +35,9 @@ import org.jboss.logging.MessageBundle;
 import org.jboss.logging.Messages;
 
 /**
- * A JBoss-Logging MessageBundle containing translated Strings, Exceptions etc. </p> Contains no methods that perform logging.
- * Refer to {@link AeroGearLogger} for that.
+ * A JBoss-Logging MessageBundle containing translated Strings, Exceptions etc. 
+ * </p> 
+ * Contains no methods that perform logging. Refer to {@link AeroGearLogger} for that.
  */
 @MessageBundle(projectCode = "AG_CONTROLLER")
 public interface LoggerMessages {

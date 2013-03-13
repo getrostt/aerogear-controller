@@ -36,6 +36,10 @@ import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
 
+/**
+ * PaginationHandler is a CDI Decorator that decorates a {@link RouteProcessor} and is responsible for handling
+ * paginated invocations on endpoints that support it.
+ */
 @Decorator
 public class PaginationHandler implements RouteProcessor {
 
@@ -44,6 +48,15 @@ public class PaginationHandler implements RouteProcessor {
     private final Map<String, Consumer> consumers = new HashMap<String, Consumer>();
     private final EndpointInvoker endpointInvoker;
 
+    /**
+     * Sole contructor which will have its parameters injected by CDI.
+     * 
+     * @param delegate the {@link RouteProcessor} that this class decorates.
+     * @param pagingStrategies a CDI {@link Instance} of {@link PaginationStrategy}s enabling the strategy to be configured.
+     * @param consumers CDI {@link Instance} of {@link Consumer} that are used for unmarshalling a HTTP request body into
+     *      a Java Object representation. 
+     * @param endpointInvoker {@link EndpointInvoker} which is responsible for invoking endpoints.
+     */
     @Inject
     public PaginationHandler(final @Delegate RouteProcessor delegate, final Instance<PaginationStrategy> pagingStrategies,
             final Instance<Consumer> consumers, final EndpointInvoker endpointInvoker) {

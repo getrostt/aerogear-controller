@@ -25,6 +25,15 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import org.jboss.aerogear.controller.log.LoggerMessages;
 import org.jboss.aerogear.controller.router.Responder;
 
+/**
+ * AGExtention is a CDI extension that verifies that {@link Responder} implementations in AeroGear Controller
+ * have a no-args constructor.
+ * </p>
+ * If a {@code Responder} implementation does not have a no-args constructor an error upon deployment will be raised
+ * to fail early and make the user aware of this condition. If this check is not performed the {@code Responder} would simply 
+ * not be picked up by CDI and trouble shooting the cause becomes difficult.  
+ * </p>
+ */
 public class AGExtension implements Extension {
 
     <T> void processAnnotatedType(final @Observes ProcessAnnotatedType<T> pat) throws SecurityException {

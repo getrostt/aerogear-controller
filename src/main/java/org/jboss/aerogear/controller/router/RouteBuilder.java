@@ -18,8 +18,9 @@
 package org.jboss.aerogear.controller.router;
 
 /**
- * RouteBuilder builds a {@link Route} using a fluent API. </p> Sample Usage:
- * 
+ * RouteBuilder builds a {@link Route} using a fluent API. 
+ * </p> 
+ * Sample Usage:
  * <pre>
  * {@code 
  *     RouteBuilder routeBuilder = ...;
@@ -38,7 +39,7 @@ public interface RouteBuilder {
      * 
      * @param exception a single class of type, or subtype, {@link Throwable}.
      * @param exceptions zero or more classes of type, or subtypes, of {@link Throwable}.
-     * @return {@link TargetEndpoint} to enable further configuration of the route, such as * specifying the target class and
+     * @return {@link TargetEndpoint} to enable further configuration of the route, such as specifying the target class and
      *         method that will be called when the exception(s) are thrown.
      */
     TargetEndpoint on(Class<? extends Throwable> exception, Class<?>... exceptions);
