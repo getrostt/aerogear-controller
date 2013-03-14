@@ -22,8 +22,10 @@ import java.util.Map;
 import com.google.common.base.Optional;
 
 /**
- * Represents information about pagination in AeroGear Controller. </p> Provides access to "raw" {@link Links}, and
- * {@link PaginationProperties} to enable developers to assemble pagination information in whatever way they choose.
+ * Represents information about pagination in AeroGear Controller. 
+ * </p> 
+ * Provides access to "raw" {@link Links}, and {@link PaginationProperties} to enable developers to assemble pagination 
+ * information in whatever way they choose.
  */
 public class PaginationMetadata {
 

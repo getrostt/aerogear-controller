@@ -16,6 +16,12 @@
  */
 package org.jboss.aerogear.controller.router.rest.pagination;
 
+/**
+ * WebLinking provides support for generating the HTTP response header in accordance to 
+ * <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">Web Linking</a>.
+ * 
+ * @see Links
+ */
 public class WebLinking {
 
     public static final String PREVIOUS = "previous";
@@ -24,6 +30,11 @@ public class WebLinking {
 
     private Links links;
 
+    /**
+     * Sole constructor.
+     * 
+     * @param links the {@link Links} instance used to get the next, previous link links. 
+     */
     public WebLinking(final Links links) {
         this.links = links;
     }

@@ -27,8 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
- * A PaginationStrategy that expects the target endpoint method to take a {@link PaginationInfo} as a parameter. </p> Subclasses
- * can implement {@link #setResponseHeaders(PaginationMetadata, HttpServletResponse, int)} to set the HTTP Response headers.
+ * A PaginationStrategy that expects the target endpoint method to take a {@link PaginationInfo} as a parameter. 
+ * </p> 
+ * Subclasses can implement {@link #setResponseHeaders(PaginationMetadata, HttpServletResponse, int)} to set the HTTP Response 
+ * headers.
  */
 public abstract class AbstractPaginationStrategy implements PaginationStrategy {
 

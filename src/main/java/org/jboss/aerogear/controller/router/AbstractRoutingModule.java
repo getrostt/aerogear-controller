@@ -24,13 +24,18 @@ import org.jboss.aerogear.controller.router.parameter.Parameter;
 
 /**
  * AbstractRoutingModule simplifies the process of configuring Routes by implementing {@link RoutingModule} and providing helper
- * methods. </p> Example Usage:
+ * methods. 
+ * </p> 
  * 
+ * Example Usage:
  * <pre>
  * Routes routes = new AbstractRoutingModule() {
  *     &#064;Override
  *     public void configuration() {
- *         route().from(&quot;/home&quot;).on(RequestMethod.GET).to(SampleController.class).index();
+ *         route()
+ *                .from(&quot;/home&quot;)
+ *                .on(RequestMethod.GET)
+ *                .to(SampleController.class).index();
  *         // ... more routes
  *     }
  * }.build();

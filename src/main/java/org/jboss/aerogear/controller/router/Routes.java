@@ -27,7 +27,8 @@ import java.util.Set;
 
 /**
  * Routes is a collection of {@link Route} instances that are able to handle certain {@link RequestMethod}/requestURI
- * combinations. </p>
+ * combinations. 
+ * </p>
  * 
  * This class also provides static factory methods for creating Routes instances.
  */

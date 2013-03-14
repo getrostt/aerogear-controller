@@ -26,12 +26,22 @@ import org.jboss.aerogear.controller.router.Responders;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
 
+/**
+ * ResponseHandler is a CDI Decorator that decorates a {@link RouteProcessor} and is responsible for handling
+ * the result from the invoked endpoint. 
+ */
 @Decorator
 public class ResponseHandler implements RouteProcessor {
 
     private final RouteProcessor delegate;
     private final Responders responders;
 
+    /**
+     * Sole contructor which will have its parameters injected by CDI.
+     * 
+     * @param delegate the {@link RouteProcessor} that this class decorates.
+     * @param responders the {@link Responders} class that will handle the response processing.
+     */
     @Inject
     public ResponseHandler(final @Delegate RouteProcessor delegate, final Responders responders) {
         this.delegate = delegate;

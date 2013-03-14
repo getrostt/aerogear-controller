@@ -24,8 +24,20 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface Consumer {
 
+    /**
+     * The media type that this consumer can handle.
+     * 
+     * @return {@code String} the media type that this consumer can handle.
+     */
     public String mediaType();
 
+    /**
+     * Will unmarshall the the HttpServletRequest into an instance of type T
+     * 
+     * @param request the {@link HttpServletRequest}.
+     * @param type the type that the request should be unmarshalled to.
+     * @return {@code T} an instance of type T.
+     */
     <T> T unmarshall(HttpServletRequest request, Class<T> type);
 
 }

@@ -22,7 +22,6 @@ import org.jboss.aerogear.controller.router.Route;
 
 /**
  * An Abstract {@link ViewResolver} pattern for resolving a view is as follows:
- * 
  * <pre>
  * /WEB-INF/pages/TargetClassName/TargetMethodName<.suffix>
  * </pre>

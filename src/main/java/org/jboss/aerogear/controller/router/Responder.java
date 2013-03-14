@@ -38,7 +38,7 @@ public interface Responder {
     boolean accepts(final String mediaType);
 
     /**
-     * Responds to the current request in a why appropriate to the type of Responder (forward, return). </p>
+     * Responds to the current request in a why appropriate to the type of Responder (forward, return).
      * 
      * @param entity the entity returned from a {@link Route} endpoint.
      * @param routeContext the current {@link RouteContext}.

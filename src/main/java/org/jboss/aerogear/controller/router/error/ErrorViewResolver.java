@@ -23,8 +23,8 @@ import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.view.ViewResolver;
 
 /**
- * A {@link ViewResolver} that decorates a ViewResolver to enable short-circuiting the call to resolve the views path. </p>
- * 
+ * A {@link ViewResolver} that decorates a ViewResolver to enable short-circuiting the call to resolve the views path. 
+ * </p>
  * This {@link ViewResolver} used only for error handling and specifically in the situation when a custom error route has not
  * been defined.
  */
@@ -32,16 +32,21 @@ public class ErrorViewResolver implements ViewResolver {
 
     private final ViewResolver delegate;
 
+    /**
+     * Sole constructor.
+     * 
+     * @param delegate the {@link ViewResolver} that this instance will delegate to.
+     */
     public ErrorViewResolver(final ViewResolver delegate) {
         checkNotNull(delegate, "'delegate' ViewResolver must not be null");
         this.delegate = delegate;
     }
 
     /**
-     * Returns the path of the passed-in {@link Route} if it is a default/global error Route, and if not, will let the delegate
+     * Returns the path of the passed-in {@link Route} if it is a default error Route, and if not, will let the delegate
      * handle resolving the path for the Route
      * 
-     * @param route the route for which to resolve the view.
+     * @param route the route for which a view is to be resolved
      * @return {@code String} the view for the passed in Route.
      */
     @Override

@@ -36,8 +36,10 @@ public class RequestUtils {
     }
 
     /**
-     * Returns the path of the current request with out the context path. </p> For example, if the web application was deployed
-     * with a context path of '/myapp', and the request submitted was '/myapp/cars/12', this method would return '/cars/12'.
+     * Returns the path of the current request with out the context path. 
+     * </p> 
+     * For example, if the web application was deployed with a context path of '/myapp', and the request submitted was 
+     * '/myapp/cars/12', this method would return '/cars/12'.
      * 
      * @param request the {@link HttpServletRequest}.
      * @return {@code String} the request path without the context path (suffix)
