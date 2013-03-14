@@ -24,7 +24,7 @@ import java.util.Set;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.log.ExceptionBundle;
 import org.jboss.aerogear.controller.util.RequestUtils;
 
 /**
@@ -71,7 +71,7 @@ public class Responders {
         if (acceptHeaders.contains(MediaType.ANY) || acceptHeaders.isEmpty()) {
             respondAny(routeMediaTypes, result, routeContext);
         } else {
-            throw LoggerMessages.MESSAGES.noResponderForRequestedMediaType(routeContext.getRequest().getHeader("Accept"), this);
+            throw ExceptionBundle.MESSAGES.noResponderForRequestedMediaType(routeContext.getRequest().getHeader("Accept"), this);
         }
     }
 

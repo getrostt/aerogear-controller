@@ -40,8 +40,8 @@ import org.jboss.logging.Messages;
  * Contains no methods that perform logging. Refer to {@link AeroGearLogger} for that.
  */
 @MessageBundle(projectCode = "AG_CONTROLLER")
-public interface LoggerMessages {
-    LoggerMessages MESSAGES = Messages.getBundle(LoggerMessages.class);
+public interface ExceptionBundle {
+    ExceptionBundle MESSAGES = Messages.getBundle(ExceptionBundle.class);
 
     @LogMessage(level = Logger.Level.FATAL)
     @Message(id = 1, value = "must be run inside a Servlet container")

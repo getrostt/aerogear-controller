@@ -18,7 +18,7 @@
 package org.jboss.aerogear.controller.router;
 
 import org.jboss.aerogear.controller.log.AeroGearLogger;
-import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.log.ExceptionBundle;
 import org.jboss.aerogear.controller.router.error.ErrorRoute;
 
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class Routes {
                 return route;
             }
         }
-        throw LoggerMessages.MESSAGES.routeNotFound(method, requestURI, acceptHeaders);
+        throw ExceptionBundle.MESSAGES.routeNotFound(method, requestURI, acceptHeaders);
     }
 
     /**
