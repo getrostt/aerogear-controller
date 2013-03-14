@@ -44,9 +44,11 @@ public enum ErrorRoute {
     private ErrorRoute(final String exceptionAttributeName) {
         this.exceptionAttributeName = exceptionAttributeName;
         final RouteDescriptor rd = new RouteDescriptor();
-        rd.setPath(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0])
-                .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class))).on(RequestMethod.GET)
-                .produces(ErrorViewResponder.MEDIA_TYPE).to(ErrorTarget.class).error(param(Throwable.class));
+        rd.setPath(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0]);
+        rd.setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)));
+        rd.on(RequestMethod.GET);
+        rd.produces(ErrorViewResponder.MEDIA_TYPE);
+        rd.to(ErrorTarget.class).error(param(Throwable.class));
         route = new DefaultRoute(rd);
     }
 

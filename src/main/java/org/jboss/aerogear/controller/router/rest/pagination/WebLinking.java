@@ -28,7 +28,7 @@ public class WebLinking {
     public static final String NEXT = "next";
     public static final String LINK_HEADER = "Link";
 
-    private Links links;
+    private final Links links;
 
     /**
      * Sole constructor.

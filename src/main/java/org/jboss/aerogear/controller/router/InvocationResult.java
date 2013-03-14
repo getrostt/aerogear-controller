@@ -21,8 +21,8 @@ package org.jboss.aerogear.controller.router;
  */
 public class InvocationResult {
 
-    private Object result;
-    private RouteContext routeContext;
+    private final Object result;
+    private final RouteContext routeContext;
 
     /**
      * Sole constructor.
