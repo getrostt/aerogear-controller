@@ -75,5 +75,9 @@ public interface ExceptionBundle {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 14, value = "The class '%s', does not have a no-args constructor which is required by CDI.")
     RuntimeException responderDoesNotHaveNoArgsCtor(Class<?> javaClass);
+    
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 15, value = "No routes were found in the deployment. Please verify that you have implemented RoutingModule, and that the deployment has a beans.xml file in WEB-INF")
+    RuntimeException noRoutesAvailable();
 
 }

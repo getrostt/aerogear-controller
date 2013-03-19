@@ -30,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.aerogear.controller.log.ExceptionBundle;
 import org.jboss.aerogear.controller.util.RequestUtils;
 
 /**
@@ -53,7 +54,10 @@ public class DefaultRouter implements Router {
 
     @Inject
     public DefaultRouter(Instance<RoutingModule> instance, RouteProcessor routeProcessor) {
-        this.routes = instance.isUnsatisfied() ? Routes.from(Collections.<RouteBuilder> emptyList()) : instance.get().build();
+        if (instance.isUnsatisfied()) {
+            throw ExceptionBundle.MESSAGES.noRoutesAvailable();
+        }
+        this.routes = instance.get().build();
         this.routeProcessor = routeProcessor;
     }
 
