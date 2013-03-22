@@ -78,7 +78,7 @@ public class ParameterExtractor {
                     if (addIfPresent(extractDefaultParam(requestParameter), requestParameter.getName(), args)) {
                         break;
                     }
-                    if (addIfPresent(extractPathParam(routeContext,parameter.getType()), requestParameter.getName(), args)) {
+                    if (addIfPresent(extractPathParam(routeContext, parameter.getType()), requestParameter.getName(), args)) {
                         break;
                     }
                     throw ExceptionBundle.MESSAGES.missingParameterInRequest(requestParameter.getName());
@@ -88,10 +88,10 @@ public class ParameterExtractor {
     }
 
     private static Optional<?> extractDefaultParam(RequestParameter<?> requestParameter) throws Exception {
-       if(requestParameter.getDefaultValue().isPresent())  {
-           return Optional.of(createInstance(requestParameter.getType(), requestParameter.getDefaultValue().get().toString()));
-       }
-       return requestParameter.getDefaultValue();
+        if(requestParameter.getDefaultValue().isPresent()) {
+            return Optional.of(createInstance(requestParameter.getType(), requestParameter.getDefaultValue().get().toString()));
+        }
+        return requestParameter.getDefaultValue();
     }
 
     private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter,
@@ -119,7 +119,7 @@ public class ParameterExtractor {
         final int paramOffset = routeContext.getRoute().getPath().indexOf('{');
         if (paramOffset != -1 && paramOffset < requestPath.length()) {
             String pathParam = requestPath.subSequence(paramOffset, requestPath.length()).toString();
-            return Optional.of(createInstance(type,pathParam));
+            return Optional.of(createInstance(type, pathParam));
         }
         return Optional.absent();
     }
@@ -160,7 +160,7 @@ public class ParameterExtractor {
 
     private static Optional<?> extractHeaderParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
         if(routeContext.getRequest().getHeader(parameter.getName()) != null){
-            return Optional.fromNullable(createInstance(parameter.getType(),routeContext.getRequest().getHeader(parameter.getName())));
+            return Optional.fromNullable(createInstance(parameter.getType(), routeContext.getRequest().getHeader(parameter.getName())));
         }
         return Optional.absent();
     }
@@ -170,7 +170,7 @@ public class ParameterExtractor {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(parameter.getName())) {
-                    return Optional.fromNullable(createInstance(parameter.getType(),cookie.getValue()));
+                    return Optional.fromNullable(createInstance(parameter.getType(), cookie.getValue()));
                 }
             }
         }
