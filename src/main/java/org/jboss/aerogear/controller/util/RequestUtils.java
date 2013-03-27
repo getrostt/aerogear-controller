@@ -85,9 +85,9 @@ public class RequestUtils {
     }
     
     /**
-     * Will extract and placeholders, {name}, from the passed-in string.
+     * Will extract any placeholders, {name}, from the passed-in string.
      * 
-     * @param str the string from with placeholder values should be extracted.
+     * @param str the string from with placeholder names should be extracted.
      * @return {@code Set} containing the placeholder names.
      */
     public static Set<String> extractPlaceHolders(final String str) {
@@ -102,9 +102,9 @@ public class RequestUtils {
     /**
      * Injects/replaces the placeholders in the passed-in string with the corresponding values from the passed-in map.
      * 
-     * @param str the string containing placeholders that are to be replaces by values in the map
-     * @param map the map containing the mapping of param name and value.
-     * @return {@code String} the string with the placesholders replaces by the values.
+     * @param str the string containing placeholders that are to be replaced by values in the map
+     * @param map the map containing the mapping of param name to param value.
+     * @return {@code String} the string with the placesholders replaced by the values.
      */
     public static String injectParamValues(final String str, final Map<String, Object> map) {
         final Matcher matcher = PLACEHOLDER_PATTERN.matcher(str);

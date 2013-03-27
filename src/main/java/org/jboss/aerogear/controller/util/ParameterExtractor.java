@@ -52,10 +52,11 @@ public class ParameterExtractor {
      * Extracts the arguments from the current request for the target route.
      * 
      * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext}.
-     * @return {@code Object[]} an array of Object matching the route targets parameters.
+     * @param consumers the {@link Consumer}s that will be used to try to unmarshall the request body.
+     * @return {@code Map<String, Object} containing parameter name -> value mapping.
      */
     public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) throws Exception {
-        final Map<String, Object> args = new LinkedHashMap<String, Object>();
+        final Map<String, Object> argsMap = new LinkedHashMap<String, Object>();
         final List<Parameter<?>> parameters = routeContext.getRoute().getParameters();
         final int size = parameters.size();
         for (int i = 0; i < size; i++) {
@@ -65,25 +66,26 @@ public class ParameterExtractor {
                     if (PaginationInfo.class.isAssignableFrom(parameter.getType())) {
                         break;
                     }
-                    if (!addIfPresent(extractIogiParam(routeContext), "entityParam", args)) {
-                        args.put("entityParam", extractBody(routeContext, parameter, consumers));
+                    if (!addIfPresent(extractIogiParam(routeContext), "entityParam", argsMap)) {
+                        argsMap.put("entityParam", extractBody(routeContext, parameter, consumers));
                     }
                     break;
                 case REQUEST:
-                    final RequestParameter<?> requestParameter = (RequestParameter<?>) parameter;
-                    extractRequestParam(requestParameter.getName(), requestParameter.getType(), requestParameter.getDefaultValue(), args, routeContext);
+                    final RequestParameter<?> rp = (RequestParameter<?>) parameter;
+                    extractRequestParam(rp.getName(), rp.getType(), rp.getDefaultValue(), argsMap, routeContext);
                     break;
                 case CONSTANT:
-                    args.put("constantParam-" + i, ((ConstantParameter<?>)parameter).getValue());
+                    final ConstantParameter<?> cp = (ConstantParameter<?>) parameter;
+                    argsMap.put("constantParam-" + i, cp.getValue());
                     break;
                 case REPLACEMENT:
                     final ReplacementParameter<?> replacementParam = (ReplacementParameter<?>) parameter;
                     final Map<String, Object> paramsMap = extractRequestParams(replacementParam, routeContext);
-                    args.put("replacementParam-" + i, RequestUtils.injectParamValues(replacementParam.getString(), paramsMap));
+                    argsMap.put("replacementParam-" + i, RequestUtils.injectParamValues(replacementParam.getString(), paramsMap));
                     break;
             }
         }
-        return args;
+        return argsMap;
     }
     
     private static Map<String, Object> extractRequestParam(
