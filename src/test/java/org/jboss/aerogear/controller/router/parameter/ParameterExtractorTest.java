@@ -45,7 +45,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.google.common.base.Optional;
 
-public class ParametersTest {
+public class ParameterExtractorTest {
 
     @Mock
     private ServletContext servletContext;
