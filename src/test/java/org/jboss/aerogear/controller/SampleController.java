@@ -36,6 +36,9 @@ public class SampleController {
     public void client(String name) {
     }
 
+    public void client(Long name) {
+    }
+
     public void lol() {
     }
 
@@ -53,6 +56,9 @@ public class SampleController {
     }
 
     public void find(String color, String brand) {
+    }
+
+    public void find(Long id) {
     }
 
     @Paginated

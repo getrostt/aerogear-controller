@@ -35,6 +35,8 @@ import org.jboss.aerogear.controller.router.parameter.RequestParameter;
 
 import javax.servlet.http.Cookie;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -50,7 +52,7 @@ public class ParameterExtractor {
      * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext}.
      * @return {@code Object[]} an array of Object matching the route targets parameters.
      */
-    public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) {
+    public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) throws Exception {
         final Map<String, Object> args = new LinkedHashMap<String, Object>();
         for (Parameter<?> parameter : routeContext.getRoute().getParameters()) {
             switch (parameter.getParameterType()) {
@@ -73,16 +75,23 @@ public class ParameterExtractor {
                     if (addIfPresent(extractCookieParam(routeContext, requestParameter), requestParameter.getName(), args)) {
                         break;
                     }
-                    if (addIfPresent(requestParameter.getDefaultValue(), requestParameter.getName(), args)) {
+                    if (addIfPresent(extractDefaultParam(requestParameter), requestParameter.getName(), args)) {
                         break;
                     }
-                    if (addIfPresent(extractPathParam(routeContext), requestParameter.getName(), args)) {
+                    if (addIfPresent(extractPathParam(routeContext, parameter.getType()), requestParameter.getName(), args)) {
                         break;
                     }
                     throw ExceptionBundle.MESSAGES.missingParameterInRequest(requestParameter.getName());
             }
         }
         return args;
+    }
+
+    private static Optional<?> extractDefaultParam(RequestParameter<?> requestParameter) throws Exception {
+        if(requestParameter.getDefaultValue().isPresent()) {
+            return Optional.of(createInstance(requestParameter.getType(), requestParameter.getDefaultValue().get().toString()));
+        }
+        return requestParameter.getDefaultValue();
     }
 
     private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter,
@@ -100,14 +109,17 @@ public class ParameterExtractor {
     /**
      * Extracts a path parameter from the passed in request path.
      * 
+     *
      * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext} to extract a path parameter from.
+     * @param type
      * @return {@code Optional<String>} containing the extracted path param if present in the request path.
      */
-    public static Optional<String> extractPathParam(final RouteContext routeContext) {
+    public static Optional<?> extractPathParam(final RouteContext routeContext, Class<?> type) throws Exception {
         final String requestPath = routeContext.getRequestPath();
         final int paramOffset = routeContext.getRoute().getPath().indexOf('{');
         if (paramOffset != -1 && paramOffset < requestPath.length()) {
-            return Optional.of(requestPath.subSequence(paramOffset, requestPath.length()).toString());
+            String pathParam = requestPath.subSequence(paramOffset, requestPath.length()).toString();
+            return Optional.of(createInstance(type, pathParam));
         }
         return Optional.absent();
     }
@@ -146,31 +158,39 @@ public class ParameterExtractor {
         return false;
     }
 
-    private static Optional<?> extractHeaderParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
-        return Optional.fromNullable(routeContext.getRequest().getHeader(parameter.getName()));
+    private static Optional<?> extractHeaderParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
+        if(routeContext.getRequest().getHeader(parameter.getName()) != null){
+            return Optional.fromNullable(createInstance(parameter.getType(), routeContext.getRequest().getHeader(parameter.getName())));
+        }
+        return Optional.absent();
     }
 
-    private static Optional<?> extractCookieParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
+    private static Optional<?> extractCookieParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
         final Cookie[] cookies = routeContext.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(parameter.getName())) {
-                    return Optional.fromNullable(cookie.getValue());
+                    return Optional.fromNullable(createInstance(parameter.getType(), cookie.getValue()));
                 }
             }
         }
         return Optional.absent();
     }
 
-    private static Optional<?> extractParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
+    private static Optional<?> extractParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
         final String[] values = routeContext.getRequest().getParameterMap().get(parameter.getName());
         if (values != null) {
             if (values.length == 1) {
-                return Optional.of(values[0]);
+                return Optional.of(createInstance(parameter.getType(), values[0]));
             } else {
                 throw ExceptionBundle.MESSAGES.multivaluedParamsUnsupported(parameter.getName());
             }
         }
         return Optional.absent();
     }
-}
+
+    private static Object createInstance( Class<?> type, String arg) throws Exception {
+        Constructor constructor = type.getDeclaredConstructor(String.class);
+        return constructor.newInstance(arg);
+    }
+ }

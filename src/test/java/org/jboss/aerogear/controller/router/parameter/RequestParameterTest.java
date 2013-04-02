@@ -42,4 +42,13 @@ public class RequestParameterTest {
         assertThat(parameter.getDefaultValue().get()).isEqualTo("def");
     }
 
+    @Test
+    public void pathParameterWithDefaultValueWithType() {
+        final RequestParameter<Long> parameter = new RequestParameter<Long>("model", Parameter.Type.REQUEST, new Long(5),
+                Long.class);
+        assertThat(parameter.getName()).isEqualTo("model");
+        assertThat(parameter.getParameterType()).isEqualTo(Parameter.Type.REQUEST);
+        assertThat(parameter.getDefaultValue().get()).isEqualTo(new Long("5"));
+    }
+
 }

@@ -70,6 +70,17 @@ public class RoutesTest {
     }
 
     @Test
+    public void routesWithTypedPathParameters() {
+        Routes routes = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route().from("/car/{id}").on(GET).to(SampleController.class).find(param("id",Long.class));
+            }
+        }.build();
+        assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders(MediaType.HTML.getType()))).isTrue();
+    }
+
+    @Test
     public void restfulRoute() {
         final MediaType custom = new MediaType("application/custom", CustomResponder.class);
         Routes routes = new AbstractRoutingModule() {

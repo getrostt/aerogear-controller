@@ -97,6 +97,23 @@ public class DefaultRouteProcessorTest {
     }
 
     @Test
+    public void testRestRouteWithTypedPathParam() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}").roles("admin")
+                        .on(GET)
+                        .produces(JSP, JSON)
+                        .to(SampleController.class).find(param("id",Long.class));
+            }
+        });
+        routeTester.acceptHeader(JSON).processGetRequest("/car/3");
+        verify(routeTester.<SampleController>getController()).find(new Long(3));
+        verify(routeTester.jsonResponder()).respond(any(), any(RouteContext.class));
+    }
+
+    @Test
     public void testFormParameters() throws Exception {
         final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
             @Override

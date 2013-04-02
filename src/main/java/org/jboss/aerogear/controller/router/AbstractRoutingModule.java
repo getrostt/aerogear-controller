@@ -90,6 +90,11 @@ public abstract class AbstractRoutingModule implements RoutingModule {
         return null;
     }
 
+    public <T> T param(String id, Class<T> type) {
+        addParameter(Parameter.param(id, type));
+        return null;
+    }
+
     public String param(String id, String defaultValue) {
         addParameter(Parameter.param(id, defaultValue, String.class));
         return null;
