@@ -59,22 +59,30 @@ public class PaginationMetadata {
     public Map<String, String> getHeaders(final int resultsSize) {
         final Map<String, String> headers = new HashMap<String, String>();
         if (headerPrefix.isPresent()) {
-            if (!params.isFirstOffset()) {
+            if (!firstpage()) {
                 headers.put(headerPrefix.get() + "Links-Previous", links.getPrevious());
             }
-            if (resultsSize == params.limit()) {
+            if (fullpage(resultsSize)) {
                 headers.put(headerPrefix.get() + "Links-Next", links.getNext());
             }
         } else {
-            if (params.isFirstOffset()) {
+            if (firstpage() && fullpage(resultsSize)) {
                 headers.put(webLinking.getLinkHeaderName(), webLinking.getNext());
-            } else if (resultsSize < params.limit()) {
+            } else if (!firstpage() && !fullpage(resultsSize)) {
                 headers.put(webLinking.getLinkHeaderName(), webLinking.getPrevious());
-            } else {
+            } else if (fullpage(resultsSize)) {
                 headers.put(webLinking.getLinkHeaderName(), webLinking.getLinkHeaders());
             }
         }
         return headers;
+    }
+    
+    private boolean firstpage() {
+        return params.isFirstOffset();
+    }
+    
+    private boolean fullpage(final int results) {
+        return results == params.limit();
     }
 
     public WebLinking getWebLinking() {

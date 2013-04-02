@@ -44,6 +44,28 @@ public class PagingMetadataTest {
         assertThat(links.getFirst()).isEqualTo("cars?offset=0&limit=10");
         assertThat(links.getPrevious()).isEqualTo("cars?offset=0&limit=10");
     }
+    
+    @Test
+    public void customHeadersNoData() {
+        final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser, "TEST-");
+        final Map<String, String> headers = metadata.getHeaders(0);
+        assertThat(headers.isEmpty()).isTrue();
+    }
+    
+    @Test
+    public void customHeadersNoFullPageAvailable() {
+        final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser, "TEST-");
+        final Map<String, String> headers = metadata.getHeaders(5);
+        assertThat(headers.isEmpty()).isTrue();
+    }
+    
+    @Test
+    public void customHeadersOnePageAvailable() {
+        final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser, "TEST-");
+        final Map<String, String> headers = metadata.getHeaders(10);
+        assertThat(headers.get("TEST-Links-Next")).isEqualTo("cars?offset=10&limit=10");
+        assertThat(headers.size()).isEqualTo(1);
+    }
 
     @Test
     public void navigateForward() {
@@ -75,7 +97,7 @@ public class PagingMetadataTest {
         links = metadata.getLinks();
         assertThat(links.getPrevious()).isEqualTo("cars?offset=0&limit=5");
     }
-
+    
     @Test
     public void webLinkingFirst() {
         final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser);
@@ -101,6 +123,28 @@ public class PagingMetadataTest {
         final Map<String, String> headers = Util.parseWebLinkHeader(responseHeaders.get(WebLinking.LINK_HEADER));
         assertThat(headers.get(WebLinking.PREVIOUS)).isEqualTo("cars?offset=0&limit=5");
         assertThat(headers.get(WebLinking.NEXT)).isNull();
+    }
+    
+    @Test
+    public void webLinkingNoData() {
+        final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser);
+        final Map<String, String> responseHeaders = metadata.getHeaders(0);
+        assertThat(responseHeaders.isEmpty()).isTrue();
+    }
+    
+    @Test
+    public void webLinkingNoFullPageAvailable() {
+        final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser);
+        final Map<String, String> responseHeaders = metadata.getHeaders(5);
+        assertThat(responseHeaders.isEmpty()).isTrue();
+    }
+    
+    @Test
+    public void webLinkingOneFullPageAvailable() {
+        final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser);
+        final Map<String, String> responseHeaders = metadata.getHeaders(10);
+        final Map<String, String> headers = Util.parseWebLinkHeader(responseHeaders.get(WebLinking.LINK_HEADER));
+        assertThat(headers.get(WebLinking.NEXT)).isEqualTo("cars?offset=10&limit=10");
     }
 
     private int parseOffset(final String header) {
