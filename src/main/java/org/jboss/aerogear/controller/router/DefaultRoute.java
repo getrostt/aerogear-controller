@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.jboss.aerogear.controller.util.RequestUtils;
 
 /**
  * An immutable implementation of {@link Route}.
@@ -92,14 +93,8 @@ public class DefaultRoute implements Route {
         return false;
     }
 
-    private boolean isPathCompatible(String path) {
-        if (isParameterized()) {
-            final int paramStart = this.path.indexOf('{');
-            if (paramStart < path.length()) {
-                return this.path.subSequence(0, paramStart).equals(path.subSequence(0, paramStart));
-            }
-        }
-        return this.path.equals(path);
+    private boolean isPathCompatible(String realPath) {
+        return RequestUtils.segmentsMatch(this.path, realPath);
     }
 
     @Override

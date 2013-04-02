@@ -214,4 +214,40 @@ public class RequestUtilsTest {
         assertThat(params.isEmpty()).isTrue();
     }
     
+    @Test
+    public void segmentsMatch() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/segment1/segment2", "/cars/segment1/segment2/");
+        assertThat(matches).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatchWithPlaceholders() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}/{brand}", "/cars/red/BMW");
+        assertThat(matches).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatchTrailingSlash() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}/{brand}", "/cars/red/BMW/");
+        assertThat(matches).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatchNoMatch() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}", "/cars/");
+        assertThat(matches).isFalse();
+    }
+    
+    @Test
+    public void segmentsMatchRealPathContainsMoreSegments() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}", "/cars/red/BMW/");
+        assertThat(matches).isFalse();
+    }
+    
+    @Test
+    public void segmentsMatchNoMatchDifferentPaths() {
+        final boolean matches = RequestUtils.segmentsMatch("/candy/{color}/brands", "/cars/red/brands");
+        assertThat(matches).isFalse();
+    }
+    
 }

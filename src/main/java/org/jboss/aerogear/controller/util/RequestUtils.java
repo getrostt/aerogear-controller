@@ -17,10 +17,12 @@
 
 package org.jboss.aerogear.controller.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -37,9 +39,10 @@ import com.google.common.base.Splitter;
  */
 public class RequestUtils {
     
-    private final static Pattern PATH_PATTERN = Pattern.compile("/([^/]+)");
+    private final static Pattern PATH_SEGMENT_PATTERN = Pattern.compile("/([^/]+)");
     private final static Pattern PATH_PLACEHOLDER_PATTERN = Pattern.compile("/\\{?([^/}?]+)\\}?");
     private final static Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{([a-zA-Z]*)\\}");
+    private final static Pattern PATH_PATTERN = Pattern.compile("/(?:([^/]+))");
 
     private RequestUtils() {
     }
@@ -111,7 +114,7 @@ public class RequestUtils {
      *                    of this name in the path.
      */
     public static Map<String, Integer> extractPathVariableNames(final String path) {
-        final Matcher requestMatcher = PATH_PATTERN.matcher(path);
+        final Matcher requestMatcher = PATH_SEGMENT_PATTERN.matcher(path);
         final Map<String, Integer> map = new HashMap<String, Integer>();
         for (int i = 0; requestMatcher.find(); i++) {
             final String segment = requestMatcher.group(1);
@@ -180,5 +183,50 @@ public class RequestUtils {
         matcher.appendTail(sb);
         return sb.toString();
     }
-
+    
+    /**
+     * Determines whether to paths match in terms of having the same number of segments and the same segment names. 
+     * </p>
+     * @param placeHolderPath path that may contain placeholders.
+     * @param realPath the actual path of the request.
+     * @return {@code true} if the number of segments match and the segments names match.
+     */
+    public static boolean segmentsMatch(final String placeHolderPath, final String realPath) {
+        final List<String> placeholderSegments = pathSegements(placeHolderPath);
+        final List<String> realPathSegments = pathSegements(realPath);
+        if (placeholderSegments.size() != realPathSegments.size()) {
+            return false;
+        }
+        final int segments = placeholderSegments.size();
+        for (int i = 0; i < segments; i++ ) {
+            final String placeholderSegment = placeholderSegments.get(i);
+            final String realPathSegment = realPathSegments.get(i);
+            if (placeholderSegment.charAt(0) == '{') {
+                if (realPathSegment == null || realPathSegment.equals("")) {
+                    return false;
+                }
+            } else {
+                if (!placeholderSegment.equals(realPathSegment)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Returns a List of segments for the passed-in path.
+     * <p/>
+     * @param path which can include placeholders which will be included as-is, for example {placeholderName}
+     * @return {@code List<String>} containing the segments of the path.
+     */
+    public static List<String> pathSegements(final String path) {
+        final List<String> segments = new ArrayList<String>();
+        final Matcher m = PATH_PATTERN.matcher(path);
+        while (m.find()) {
+            segments.add(m.group(1));
+        }
+        return segments;
+    }
+    
 }
