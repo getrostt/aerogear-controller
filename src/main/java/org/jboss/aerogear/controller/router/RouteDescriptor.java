@@ -129,6 +129,13 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
             return null;
         }
         
+        /*
+         * If the target method has been annotated with Paginated, this method will extract the
+         * values for the offset/limit, and add these as normal method parameters. By doing this they 
+         * will processed in the same manner as they would have if they had been explicitely specified
+         * as method parameter to the target method. They will be extracted from the request just
+         * as any other parameter. Later, these values will be available to the PaginationStrategy in use.
+         */
         private void processPaginatedAnnotation(Method method, List<Parameter<?>> methodParams) {
             if (method.getAnnotation(Paginated.class) != null) {
                 final Paginated paginated = method.getAnnotation(Paginated.class);
