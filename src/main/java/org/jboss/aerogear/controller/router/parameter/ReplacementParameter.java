@@ -26,12 +26,12 @@ import java.util.Set;
 public class ReplacementParameter<T> extends Parameter<T> {
 
     private final Set<String> paramNames;
-    private final String str;
+    private final String string;
 
-    public ReplacementParameter(final String str, final Set<String> paramNames, final Class<T> type) {
+    public ReplacementParameter(final String string, final Set<String> paramNames, final Class<T> type) {
         super(Parameter.Type.REPLACEMENT, type);
         this.paramNames = paramNames;
-        this.str = str;
+        this.string = string;
     }
     
     public Set<String> getParamNames() {
@@ -39,12 +39,12 @@ public class ReplacementParameter<T> extends Parameter<T> {
     }
     
     public String getString() {
-        return str;
+        return string;
     }
     
     @Override
     public String toString() {
-        return "ReplacementParameter[paramNames=" + paramNames + ", str=" + str + ", type=" + getType() + "]";
+        return "ReplacementParameter[paramNames=" + paramNames + ", string=" + string + ", type=" + getType() + "]";
     }
 
 }
