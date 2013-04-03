@@ -619,11 +619,26 @@ public class DefaultRouteProcessorTest {
                 route()
                         .from("/car/{color}/{brand}")
                         .on(GET)
-                        .produces(JSP)
                         .to(SampleController.class).save(param("color"), param("brand"));
             }
         });
         routeTester.acceptHeader(HTML).processGetRequest("/car/red/ferrari");
+        verify(routeTester.<SampleController>getController()).save("red", "ferrari");
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testRouteWithMultiplePathParamsAndSubpath() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{color}/somepath/{brand}")
+                        .on(GET)
+                        .to(SampleController.class).save(param("color"), param("brand"));
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car/red/somepath/ferrari");
         verify(routeTester.<SampleController>getController()).save("red", "ferrari");
         verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
     }

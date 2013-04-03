@@ -156,6 +156,7 @@ public class RequestUtilsTest {
         assertThat(params.get(0)).isEqualTo("cars");
         assertThat(params.get(1)).isEqualTo("red");
         assertThat(params.get(2)).isEqualTo("BMW");
+        assertThat(params.size()).isEqualTo(3);
     }
     
     @Test
@@ -164,6 +165,7 @@ public class RequestUtilsTest {
         assertThat(params.get(0)).isEqualTo("cars");
         assertThat(params.get(1)).isEqualTo("color");
         assertThat(params.get(2)).isEqualTo("brand");
+        assertThat(params.size()).isEqualTo(3);
     }
     
     @Test
@@ -173,6 +175,7 @@ public class RequestUtilsTest {
         assertThat(params.get(1)).isEqualTo("color");
         assertThat(params.get(2)).isEqualTo("subpath");
         assertThat(params.get(3)).isEqualTo("brand");
+        assertThat(params.size()).isEqualTo(4);
     }
     
     @Test
@@ -218,6 +221,12 @@ public class RequestUtilsTest {
     public void segmentsMatch() {
         final boolean matches = RequestUtils.segmentsMatch("/cars/segment1/segment2", "/cars/segment1/segment2/");
         assertThat(matches).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatchDifferentPaths() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/subpath", "/carz/subpath");
+        assertThat(matches).isFalse();
     }
     
     @Test
