@@ -35,6 +35,7 @@ import org.jboss.aerogear.controller.router.InvocationResult;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.RouteContext;
+import org.jboss.aerogear.controller.router.error.ErrorViewResolver;
 import org.junit.Test;
 
 public class ErrorHandlerTest {
@@ -91,6 +92,7 @@ public class ErrorHandlerTest {
         routeTester.processGetRequest("/home");
         verify(routeTester.getErrorTarget()).error(any(SampleControllerException.class));
         verify(routeTester.errorViewResponder()).respond(anyObject(), any(RouteContext.class));
+        assertThat(routeTester.errorViewResponder().getViewResolver()).isInstanceOf(ErrorViewResolver.class);
     }
 
     @Test
