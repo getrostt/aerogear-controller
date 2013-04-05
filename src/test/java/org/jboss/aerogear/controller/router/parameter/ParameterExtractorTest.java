@@ -45,7 +45,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.google.common.base.Optional;
 
-public class ParametersTest {
+public class ParameterExtractorTest {
 
     @Mock
     private ServletContext servletContext;
@@ -179,8 +179,8 @@ public class ParametersTest {
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class, String.class));
         final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext,
                 Collections.<String, Consumer> emptyMap());
-        assertThat(args.get("entity") instanceof Car).isTrue();
-        assertThat(((Car) args.get("entity")).getColor()).isEqualTo("red");
+        assertThat(args.get("entityParam") instanceof Car).isTrue();
+        assertThat(((Car) args.get("entityParam")).getColor()).isEqualTo("red");
     }
 
     @Test

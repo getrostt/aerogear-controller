@@ -54,6 +54,12 @@ public class SampleController {
 
     public void find(String id) {
     }
+    
+    public void findWithConstant(String constant, String id) {
+    }
+    
+    public void findWithConstantReversed(String id, String constant) {
+    }
 
     public void find(String color, String brand) {
     }
@@ -123,5 +129,12 @@ public class SampleController {
     }
 
     public void subException() {
+    }
+    
+    
+    public void processPath(String path) {
+    }
+    
+    public void processPathWithType(String path, Class<?> type) {
     }
 }

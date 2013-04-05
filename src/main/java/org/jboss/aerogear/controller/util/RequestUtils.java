@@ -18,8 +18,12 @@
 package org.jboss.aerogear.controller.util;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -31,6 +35,8 @@ import com.google.common.base.Splitter;
  * Utility methods for various {@link HttpServletRequest} operation.
  */
 public class RequestUtils {
+    
+    private final static Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{([a-zA-Z]*)\\}");
 
     private RequestUtils() {
     }
@@ -76,6 +82,38 @@ public class RequestUtils {
             acceptHeaders.add(header);
         }
         return acceptHeaders;
+    }
+    
+    /**
+     * Will extract any placeholders, {name}, from the passed-in string.
+     * 
+     * @param str the string from with placeholder names should be extracted.
+     * @return {@code Set} containing the placeholder names.
+     */
+    public static Set<String> extractPlaceHolders(final String str) {
+        final Matcher matcher = PLACEHOLDER_PATTERN.matcher(str);
+        final Set<String> params = new HashSet<String>();
+        while (matcher.find()) {
+            params.add(matcher.group(1));
+        }
+        return params;
+    }
+    
+    /**
+     * Injects/replaces the placeholders in the passed-in string with the corresponding values from the passed-in map.
+     * 
+     * @param str the string containing placeholders that are to be replaced by values in the map
+     * @param map the map containing the mapping of param name to param value.
+     * @return {@code String} the string with the placesholders replaced by the values.
+     */
+    public static String injectParamValues(final String str, final Map<String, Object> map) {
+        final Matcher matcher = PLACEHOLDER_PATTERN.matcher(str);
+        final StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, String.valueOf(map.get(matcher.group(1))));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
 }

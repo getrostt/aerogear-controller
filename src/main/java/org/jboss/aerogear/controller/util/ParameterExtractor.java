@@ -17,30 +17,32 @@
 
 package org.jboss.aerogear.controller.util;
 
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.Cookie;
+
+import org.jboss.aerogear.controller.log.AeroGearLogger;
+import org.jboss.aerogear.controller.log.ExceptionBundle;
+import org.jboss.aerogear.controller.router.Consumer;
+import org.jboss.aerogear.controller.router.RouteContext;
+import org.jboss.aerogear.controller.router.parameter.ConstantParameter;
+import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.jboss.aerogear.controller.router.parameter.ReplacementParameter;
+import org.jboss.aerogear.controller.router.parameter.RequestParameter;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
+
 import br.com.caelum.iogi.Iogi;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
 
 import com.google.common.base.Optional;
-
-import org.jboss.aerogear.controller.log.AeroGearLogger;
-import org.jboss.aerogear.controller.log.ExceptionBundle;
-import org.jboss.aerogear.controller.router.Consumer;
-import org.jboss.aerogear.controller.router.RouteContext;
-import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.util.StringUtils;
-import org.jboss.aerogear.controller.router.parameter.Parameter;
-import org.jboss.aerogear.controller.router.parameter.RequestParameter;
-
-import javax.servlet.http.Cookie;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 
 public class ParameterExtractor {
 
@@ -50,48 +52,80 @@ public class ParameterExtractor {
      * Extracts the arguments from the current request for the target route.
      * 
      * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext}.
-     * @return {@code Object[]} an array of Object matching the route targets parameters.
+     * @param consumers the {@link Consumer}s that will be used to try to unmarshall the request body.
+     * @return {@code Map<String, Object} containing parameter name -> value mapping.
      */
     public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) throws Exception {
-        final Map<String, Object> args = new LinkedHashMap<String, Object>();
-        for (Parameter<?> parameter : routeContext.getRoute().getParameters()) {
+        final Map<String, Object> argsMap = new LinkedHashMap<String, Object>();
+        final List<Parameter<?>> parameters = routeContext.getRoute().getParameters();
+        final int size = parameters.size();
+        for (int i = 0; i < size; i++) {
+            final Parameter<?> parameter = parameters.get(i);
             switch (parameter.getParameterType()) {
                 case ENTITY:
                     if (PaginationInfo.class.isAssignableFrom(parameter.getType())) {
                         break;
                     }
-                    if (!addIfPresent(extractIogiParam(routeContext), "entity", args)) {
-                        args.put("entity", extractBody(routeContext, parameter, consumers));
+                    if (!addIfPresent(extractIogiParam(routeContext), "entityParam", argsMap)) {
+                        argsMap.put("entityParam", extractBody(routeContext, parameter, consumers));
                     }
                     break;
                 case REQUEST:
-                    final RequestParameter<?> requestParameter = (RequestParameter<?>) parameter;
-                    if (addIfPresent(extractParam(routeContext, requestParameter), requestParameter.getName(), args)) {
-                        break;
-                    }
-                    if (addIfPresent(extractHeaderParam(routeContext, requestParameter), requestParameter.getName(), args)) {
-                        break;
-                    }
-                    if (addIfPresent(extractCookieParam(routeContext, requestParameter), requestParameter.getName(), args)) {
-                        break;
-                    }
-                    if (addIfPresent(extractDefaultParam(requestParameter), requestParameter.getName(), args)) {
-                        break;
-                    }
-                    if (addIfPresent(extractPathParam(routeContext, parameter.getType()), requestParameter.getName(), args)) {
-                        break;
-                    }
-                    throw ExceptionBundle.MESSAGES.missingParameterInRequest(requestParameter.getName());
+                    final RequestParameter<?> rp = (RequestParameter<?>) parameter;
+                    extractRequestParam(rp.getName(), rp.getType(), rp.getDefaultValue(), argsMap, routeContext);
+                    break;
+                case CONSTANT:
+                    final ConstantParameter<?> cp = (ConstantParameter<?>) parameter;
+                    argsMap.put("constantParam-" + i, cp.getValue());
+                    break;
+                case REPLACEMENT:
+                    final ReplacementParameter<?> replacementParam = (ReplacementParameter<?>) parameter;
+                    final Map<String, Object> paramsMap = extractRequestParams(replacementParam, routeContext);
+                    argsMap.put("replacementParam-" + i, RequestUtils.injectParamValues(replacementParam.getString(), paramsMap));
+                    break;
             }
         }
-        return args;
+        return argsMap;
     }
-
-    private static Optional<?> extractDefaultParam(RequestParameter<?> requestParameter) throws Exception {
-        if(requestParameter.getDefaultValue().isPresent()) {
-            return Optional.of(createInstance(requestParameter.getType(), requestParameter.getDefaultValue().get().toString()));
+    
+    private static Map<String, Object> extractRequestParam(
+            final String paramName, 
+            final Class<?> type, 
+            final Optional<?> defaultValue,
+            final Map<String, Object> map,
+            final RouteContext routeContext) throws Exception {
+        if (addIfPresent(extractParam(routeContext, paramName, type), paramName, map)) {
+            return map;
         }
-        return requestParameter.getDefaultValue();
+        if (addIfPresent(extractHeaderParam(routeContext, paramName), paramName, map)) {
+            return map;
+        }
+        if (addIfPresent(extractCookieParam(routeContext, paramName, type), paramName, map)) {
+            return map;
+        }
+        if (addIfPresent(extractDefaultParam(type, defaultValue), paramName, map)) {
+            return map;
+        }
+        if (addIfPresent(extractPathParam(routeContext, type), paramName, map)) {
+            return map;
+        } else {
+            throw ExceptionBundle.MESSAGES.missingParameterInRequest(paramName);
+        }
+    }
+    
+    private static Map<String, Object> extractRequestParams(final ReplacementParameter<?> replacementParam, final RouteContext routeContext) throws Exception {
+        final Map<String, Object> map = new HashMap<String, Object>();
+        for (String paramName : replacementParam.getParamNames()) {
+            extractRequestParam(paramName, String.class, Optional.absent(), map, routeContext);
+        }
+        return map;
+    }
+    
+    private static Optional<?> extractDefaultParam(final Class<?> type, final Optional<?> defaultValue) throws Exception {
+        if(defaultValue.isPresent()) {
+            return Optional.of(createInstance(type, defaultValue.get().toString()));
+        }
+        return Optional.absent();
     }
 
     private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter,
@@ -105,7 +139,7 @@ public class ParameterExtractor {
         }
         throw ExceptionBundle.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
     }
-
+    
     /**
      * Extracts a path parameter from the passed in request path.
      * 
@@ -158,39 +192,36 @@ public class ParameterExtractor {
         return false;
     }
 
-    private static Optional<?> extractHeaderParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
-        if(routeContext.getRequest().getHeader(parameter.getName()) != null){
-            return Optional.fromNullable(createInstance(parameter.getType(), routeContext.getRequest().getHeader(parameter.getName())));
-        }
-        return Optional.absent();
+    private static Optional<?> extractHeaderParam(final RouteContext routeContext, final String paramName) {
+        return Optional.fromNullable(routeContext.getRequest().getHeader(paramName));
     }
-
-    private static Optional<?> extractCookieParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
+    
+    private static Optional<?> extractCookieParam(final RouteContext routeContext, final String paramName, final Class<?> type) throws Exception {
         final Cookie[] cookies = routeContext.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(parameter.getName())) {
-                    return Optional.fromNullable(createInstance(parameter.getType(), cookie.getValue()));
+                if (cookie.getName().equals(paramName)) {
+                    return Optional.fromNullable(createInstance(type, cookie.getValue()));
                 }
             }
         }
         return Optional.absent();
     }
-
-    private static Optional<?> extractParam(final RouteContext routeContext, final RequestParameter<?> parameter) throws Exception {
-        final String[] values = routeContext.getRequest().getParameterMap().get(parameter.getName());
+    
+    private static Optional<?> extractParam(final RouteContext routeContext, final String name, final Class<?> type) throws Exception {
+        final String[] values = routeContext.getRequest().getParameterMap().get(name);
         if (values != null) {
             if (values.length == 1) {
-                return Optional.of(createInstance(parameter.getType(), values[0]));
+                return Optional.of(createInstance(type, values[0]));
             } else {
-                throw ExceptionBundle.MESSAGES.multivaluedParamsUnsupported(parameter.getName());
+                throw ExceptionBundle.MESSAGES.multivaluedParamsUnsupported(name);
             }
         }
         return Optional.absent();
     }
 
-    private static Object createInstance( Class<?> type, String arg) throws Exception {
-        Constructor constructor = type.getDeclaredConstructor(String.class);
+    private static Object createInstance(Class<?> type, String arg) throws Exception {
+        final Constructor<?> constructor = type.getDeclaredConstructor(String.class);
         return constructor.newInstance(arg);
     }
  }
