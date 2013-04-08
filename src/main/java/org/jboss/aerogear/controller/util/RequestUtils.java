@@ -30,7 +30,10 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
+
+import com.google.common.base.Optional;
 
 /**
  * Utility methods for various {@link HttpServletRequest} operation.
@@ -152,6 +155,43 @@ public class RequestUtils {
         return params;
     }
 
+    /**
+     * Determines if a request's 'Accept' header media types are compatible with the media types that a route produces.
+     * 
+     * @param acceptHeaders the 'Accept' header media types for the current request.
+     * @param produces the {@link MediaType}s that the route is capable of producing.
+     * @return {@code true} if the one of the accept media types are compatible with on of the media types.
+     */
+    public static boolean acceptsMediaType(final Set<String> acceptHeaders, final Set<MediaType> produces) {
+        if (acceptHeaders.isEmpty() || acceptHeaders.contains(MediaType.ANY)) {
+            return true;
+        }
+        return getAcceptedMediaType(acceptHeaders, produces).isPresent();
+    }
+    
+    /**
+     * Gets the media type that is compatible with the requested media type and the media types that a route produces.
+     * 
+     * @param acceptHeaders the 'Accept' header media types for the current request.
+     * @param produces the {@link MediaType}s that the route is capable of producing.
+     * @return {@code Optional<MediaType} an {@link Optional} instance of the {@link MediaType} accepted.
+     */
+    public static Optional<MediaType> getAcceptedMediaType(final Set<String> acceptHeaders, final Set<MediaType> produces) {
+        for (String acceptHeader : acceptHeaders) {
+            for (MediaType mediaType : produces) {
+                if (acceptHeader.equals(mediaType.getType())) {
+                    return Optional.of(mediaType);
+                } else {
+                    final String[] types = acceptHeader.split("/");
+                    if (mediaType.getType().startsWith(types[0]) && types[1].equals("*")) {
+                        return Optional.of(mediaType);
+                    }
+                }
+            }
+        }
+        return Optional.absent();
+    }
+    
     /**
      * Will extract any placeholders, {name}, from the passed-in string.
      * 

@@ -163,6 +163,14 @@ public class DefaultRouteTest {
     }
     
     @Test
+    public void matchesProducesSubtype() throws NoSuchMethodException {
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("/car/{id}").on(GET).produces(MediaType.HTML).to(SampleController.class).index();
+        final Route route = new DefaultRoute(rd);
+        assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders("text/*"))).isTrue();
+    }
+    
+    @Test
     public void toStringTest() {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
