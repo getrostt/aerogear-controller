@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -131,7 +129,7 @@ public class ParameterExtractor {
     }
 
     private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter, final Consumer consumer) {
-        return unmarshall(consumer, routeContext, parameter);
+        return consumer.unmarshall(routeContext.getRequest(), parameter.getType());
     }
     
     private static Consumer getConsumer(final RouteContext routeContext, final Map<String, Consumer> consumers, 
@@ -152,10 +150,6 @@ public class ParameterExtractor {
             }
         }
         throw ExceptionBundle.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
-    }
-    
-    private static Object unmarshall(final Consumer consumer, final RouteContext routeContext, final Parameter<?> parameter) {
-        return consumer.unmarshall(routeContext.getRequest(), parameter.getType());
     }
     
     public static Optional<?> extractPathParam(final RouteContext routeContext, final RequestParameter<?> param) throws Exception {
