@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.fest.assertions.Fail;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.util.RequestUtils;
 import org.junit.Test;
 
 public class DefaultRouteTest {
@@ -160,7 +161,7 @@ public class DefaultRouteTest {
         final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList("*/*"));
         assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isTrue();
     }
-
+    
     @Test
     public void toStringTest() {
         final RouteDescriptor rd = new RouteDescriptor();

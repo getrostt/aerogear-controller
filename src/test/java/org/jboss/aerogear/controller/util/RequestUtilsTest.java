@@ -94,6 +94,21 @@ public class RequestUtilsTest {
     public void extractAcceptsHeader() {
         when(request.getHeader("Accept")).thenReturn("application/json, application/xml");
         assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.getType(), "application/xml");
+        assertThat(RequestUtils.extractAcceptHeader(request).size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractAcceptsHeaderWithQualityFactor() {
+        when(request.getHeader("Accept")).thenReturn("application/json; q=0.3, application/xml");
+        assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.getType(), "application/xml");
+        assertThat(RequestUtils.extractAcceptHeader(request).size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractAcceptsHeaderAny() {
+        when(request.getHeader("Accept")).thenReturn("*/*,text/html;level=100;custom=someValue");
+        assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.ANY, "text/html");
+        assertThat(RequestUtils.extractAcceptHeader(request).size()).isEqualTo(2);
     }
     
     @Test

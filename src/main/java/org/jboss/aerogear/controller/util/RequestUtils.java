@@ -32,8 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.aerogear.controller.router.RequestMethod;
 
-import com.google.common.base.Splitter;
-
 /**
  * Utility methods for various {@link HttpServletRequest} operation.
  */
@@ -43,6 +41,8 @@ public class RequestUtils {
     private final static Pattern PATH_PLACEHOLDER_PATTERN = Pattern.compile("/\\{?([^/}?]+)\\}?");
     private final static Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{([a-zA-Z]*)\\}");
     private final static Pattern PATH_PATTERN = Pattern.compile("/(?:([^/]+))");
+    private final static String MEDIA_RANGE = "(\\*|\\w)+";
+    private final static Pattern ACCEPT_HEADER_PATTERN = Pattern.compile("(" + MEDIA_RANGE + "/" + MEDIA_RANGE +")");
 
     private RequestUtils() {
     }
@@ -70,7 +70,7 @@ public class RequestUtils {
     public static RequestMethod extractMethod(final HttpServletRequest httpServletRequest) {
         return RequestMethod.valueOf(httpServletRequest.getMethod());
     }
-
+    
     /**
      * Returns the {@code Accept header} from the passed-in {@code HttpServletRequest}.
      * 
@@ -82,10 +82,10 @@ public class RequestUtils {
         if (acceptHeader == null) {
             return Collections.emptySet();
         }
-
         final Set<String> acceptHeaders = new LinkedHashSet<String>();
-        for (String header : Splitter.on(',').trimResults().split(acceptHeader)) {
-            acceptHeaders.add(header);
+        final Matcher m = ACCEPT_HEADER_PATTERN.matcher(acceptHeader);
+        while (m.find()) {
+            acceptHeaders.add(m.group(1));
         }
         return acceptHeaders;
     }
