@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,7 +69,7 @@ public class ParameterExtractor {
                         break;
                     }
                     if (!addIfPresent(extractIogiParam(routeContext), "entityParam", argsMap)) {
-                        argsMap.put("entityParam", extractBody(routeContext, parameter, consumers));
+                        argsMap.put("entityParam", extractBody(routeContext, parameter, getConsumer(routeContext, consumers, parameter)));
                     }
                     break;
                 case REQUEST:
@@ -128,20 +130,24 @@ public class ParameterExtractor {
         return Optional.absent();
     }
 
-    private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter,
-            final Map<String, Consumer> consumers) {
+    private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter, final Consumer consumer) {
+        return unmarshall(consumer, routeContext, parameter);
+    }
+    
+    private static Consumer getConsumer(final RouteContext routeContext, final Map<String, Consumer> consumers, 
+            final Parameter<?> parameter) {
         final Set<String> mediaTypes = routeContext.getRoute().consumes();
         final String contentType = routeContext.getRequest().getContentType();
         if (contentType != null) {
             final Consumer consumer = consumers.get(contentType);
             if (consumer != null) {
-                return unmarshall(consumer, routeContext, parameter);
+                return consumer;
             }
         } else {
             for (String mediaType : mediaTypes) {
                 final Consumer consumer = consumers.get(mediaType);
                 if (consumer != null) {
-                    return unmarshall(consumer, routeContext, parameter);
+                    return consumer;
                 }
             }
         }
