@@ -405,7 +405,7 @@ public class DefaultRouteProcessorTest {
                         .produces(JSP, JSON)
                         .to(SampleController.class).find(param("id"));
             }
-        }).requestMethod(GET).acceptHeader(JSON).acceptHeader(HTML);
+        }).requestMethod(GET).acceptHeader("application/json, text/html");
         routeTester.process("/cars/10");
         verify(routeTester.<SampleController>getController()).find("10");
         verify(routeTester.jsonResponder()).respond(anyObject(), any(RouteContext.class));
@@ -642,6 +642,23 @@ public class DefaultRouteProcessorTest {
         routeTester.acceptHeader(HTML).processGetRequest("/car/red/ferrari");
         verify(routeTester.<SampleController>getController()).save("red", "ferrari");
         verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testRestRouteWithAcceptMediaRange() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}").roles("admin")
+                        .on(GET)
+                        .produces(JSP, JSON)
+                        .to(SampleController.class).find(param("id",Long.class));
+            }
+        });
+        routeTester.acceptHeader("application/*;limit=500, text/*").processGetRequest("/car/3");
+        verify(routeTester.<SampleController>getController()).find(new Long(3));
+        verify(routeTester.jsonResponder()).respond(any(), any(RouteContext.class));
     }
     
     @Test

@@ -58,7 +58,6 @@ public class MockRequest {
     @Mock
     private RequestDispatcher requestDispatcher;
 
-    private final Set<String> acceptHeaders = new LinkedHashSet<String>();
     private final Map<String, String[]> params = new LinkedHashMap<String, String[]>();
     private final List<Cookie> cookies = new ArrayList<Cookie>();
     private StringWriter stringWriter;
@@ -74,17 +73,7 @@ public class MockRequest {
     }
 
     public MockRequest acceptHeader(final String acceptHeader) {
-        this.acceptHeaders.add(acceptHeader);
-        return this;
-    }
-
-    public MockRequest acceptHeader(final MediaType mediaType) {
-        this.acceptHeaders.add(mediaType.getType());
-        return this;
-    }
-
-    public MockRequest acceptHeaders(final String... acceptHeaders) {
-        this.acceptHeaders.addAll(Arrays.asList(acceptHeaders));
+        when(request.getHeader("Accept")).thenReturn(acceptHeader);
         return this;
     }
 
@@ -137,7 +126,6 @@ public class MockRequest {
     public void prepareProcessing() {
         setRequestParams();
         setCookies();
-        setAcceptHeaders();
         setupWriter();
     }
 
@@ -152,13 +140,6 @@ public class MockRequest {
 
     private PrintWriter printWriter(StringWriter writer) {
         return new PrintWriter(writer);
-    }
-
-    public void setAcceptHeaders() {
-        if (!acceptHeaders.isEmpty()) {
-            final String headers = Joiner.on(",").join(acceptHeaders);
-            when(request.getHeader("Accept")).thenReturn(headers);
-        }
     }
 
     public void setCookies() {
@@ -222,10 +203,6 @@ public class MockRequest {
 
     public ServletContext getServletContext() {
         return servletContext;
-    }
-
-    public Set<String> getAcceptHeaders() {
-        return acceptHeaders;
     }
 
 }
