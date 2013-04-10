@@ -197,6 +197,11 @@ public class RouteTester {
         mockRequest.header(name, value);
         return this;
     }
+    
+    public RouteTester contentType(final String value) {
+        mockRequest.contentType(value);
+        return this;
+    }
 
     public RouteTester cookie(final String name, final String value) {
         mockRequest.cookie(name, value);

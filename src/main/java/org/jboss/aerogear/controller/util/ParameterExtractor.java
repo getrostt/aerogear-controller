@@ -67,7 +67,7 @@ public class ParameterExtractor {
                         break;
                     }
                     if (!addIfPresent(extractIogiParam(routeContext), "entityParam", argsMap)) {
-                        argsMap.put("entityParam", extractBody(routeContext, parameter, consumers));
+                        argsMap.put("entityParam", extractBody(routeContext, parameter, getConsumer(routeContext, consumers, parameter)));
                     }
                     break;
                 case REQUEST:
@@ -128,13 +128,25 @@ public class ParameterExtractor {
         return Optional.absent();
     }
 
-    private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter,
-            final Map<String, Consumer> consumers) {
+    private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter, final Consumer consumer) {
+        return consumer.unmarshall(routeContext.getRequest(), parameter.getType());
+    }
+    
+    private static Consumer getConsumer(final RouteContext routeContext, final Map<String, Consumer> consumers, 
+            final Parameter<?> parameter) {
         final Set<String> mediaTypes = routeContext.getRoute().consumes();
-        for (String mediaType : mediaTypes) {
-            final Consumer consumer = consumers.get(mediaType);
+        final String contentType = routeContext.getRequest().getContentType();
+        if (contentType != null) {
+            final Consumer consumer = consumers.get(contentType);
             if (consumer != null) {
-                return consumer.unmarshall(routeContext.getRequest(), parameter.getType());
+                return consumer;
+            }
+        } else {
+            for (String mediaType : mediaTypes) {
+                final Consumer consumer = consumers.get(mediaType);
+                if (consumer != null) {
+                    return consumer;
+                }
             }
         }
         throw ExceptionBundle.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
@@ -144,6 +156,14 @@ public class ParameterExtractor {
         return extractPathParam(routeContext, param.getName(), param.getType());
     }
     
+    /**
+     * Extracts a path parameter from the passed in request path.
+     * 
+     * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext} to extract a path parameter from.
+     * @param paramName the name of the parameter to be extracted.
+     * @param type the parameter type.
+     * @return {@code Optional<String>} containing the extracted path param if present in the request path.
+     */
     public static Optional<?> extractPathParam(final RouteContext routeContext, final String paramName, final Class<?> type) throws Exception {
         final String requestPath = routeContext.getRequestPath();
         final Map<String, String> pathParams = RequestUtils.mapPathParams(requestPath, routeContext.getRoute().getPath());

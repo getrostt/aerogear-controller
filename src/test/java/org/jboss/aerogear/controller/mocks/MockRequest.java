@@ -202,6 +202,11 @@ public class MockRequest {
         cookies.add(cookie);
         return this;
     }
+    
+    public MockRequest contentType(final String contentType) {
+        when(request.getContentType()).thenReturn(contentType);
+        return this;
+    }
 
     public StringWriter getStringWriter() {
         return stringWriter;

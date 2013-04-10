@@ -376,6 +376,23 @@ public class DefaultRouteProcessorTest {
         routeTester.process("/cars");
         verify(routeTester.<SampleController>getController()).save(any(Car.class));
     }
+    
+    @Test
+    public void testConsumesWithInvalidContentType() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars").roles("admin")
+                        .on(POST)
+                        .consumes(JSON)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).save(param(Car.class));
+            }
+        }).requestMethod(POST).acceptHeader(JSON).body("{\"color\":\"red\", \"brand\":\"mini\"}");
+        final InvocationResult invocationResult = routeTester.contentType("invalid/type").processPostRequest("/cars");
+        assertThat(invocationResult.getResult()).isInstanceOf(RuntimeException.class);
+    }
 
     @Test
     public void testOrderMultipleAcceptHeaders() throws Exception {
