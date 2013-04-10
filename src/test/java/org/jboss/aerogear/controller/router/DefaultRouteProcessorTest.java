@@ -611,6 +611,38 @@ public class DefaultRouteProcessorTest {
         verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
     }
     
+    @Test
+    public void testRouteWithMultiplePathParams() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{color}/{brand}")
+                        .on(GET)
+                        .to(SampleController.class).save(param("color"), param("brand"));
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car/red/ferrari");
+        verify(routeTester.<SampleController>getController()).save("red", "ferrari");
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testRouteWithMultiplePathParamsAndSubpath() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{color}/somepath/{brand}")
+                        .on(GET)
+                        .to(SampleController.class).save(param("color"), param("brand"));
+            }
+        });
+        routeTester.acceptHeader(HTML).processGetRequest("/car/red/somepath/ferrari");
+        verify(routeTester.<SampleController>getController()).save("red", "ferrari");
+        verify(routeTester.jspResponder()).respond(any(), any(RouteContext.class));
+    }
+    
     private class CustomResponder extends AbstractRestResponder {
         
         private MediaType customMediaType = new MediaType("application/custom", CustomResponder.class); 

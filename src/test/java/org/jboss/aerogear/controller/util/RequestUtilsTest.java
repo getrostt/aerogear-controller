@@ -119,7 +119,7 @@ public class RequestUtilsTest {
     
     @Test
     public void extractPlaceHoldersNoParams() {
-        final Set<String> params = RequestUtils.extractPlaceHolders("/cars/");
+        Set<String> params = RequestUtils.extractPlaceHolders("/cars/");
         assertThat(params).isEmpty();
     }
     
@@ -149,5 +149,114 @@ public class RequestUtilsTest {
         final String processedUri = RequestUtils.injectParamValues(uri, map);
         assertThat(processedUri).isEqualTo("/cars/10?param1=Fletch?propertyName=propertyValue");
     }
-
+    
+    @Test
+    public void extractPathSegments() {
+        final Map<Integer, String> params = RequestUtils.extractPathSegments("/cars/red/BMW");
+        assertThat(params.get(0)).isEqualTo("cars");
+        assertThat(params.get(1)).isEqualTo("red");
+        assertThat(params.get(2)).isEqualTo("BMW");
+        assertThat(params.size()).isEqualTo(3);
+    }
+    
+    @Test
+    public void extractPathSegmentsWithPlaceHolders() {
+        final Map<Integer, String> params = RequestUtils.extractPathSegments("/cars/{color}/{brand}");
+        assertThat(params.get(0)).isEqualTo("cars");
+        assertThat(params.get(1)).isEqualTo("color");
+        assertThat(params.get(2)).isEqualTo("brand");
+        assertThat(params.size()).isEqualTo(3);
+    }
+    
+    @Test
+    public void extractPathSegmentWithPlaceHoldersAndSubpath() {
+        final Map<Integer, String> params = RequestUtils.extractPathSegments("/cars/{color}/subpath/{brand}");
+        assertThat(params.get(0)).isEqualTo("cars");
+        assertThat(params.get(1)).isEqualTo("color");
+        assertThat(params.get(2)).isEqualTo("subpath");
+        assertThat(params.get(3)).isEqualTo("brand");
+        assertThat(params.size()).isEqualTo(4);
+    }
+    
+    @Test
+    public void extractPathSegmentWithPlaceHoldersAndSubpathAndQueryParam() {
+        final Map<Integer, String> params = RequestUtils.extractPathSegments("/cars/red/subpath/ferrari?name=Fletch");
+        assertThat(params.get(0)).isEqualTo("cars");
+        assertThat(params.get(1)).isEqualTo("red");
+        assertThat(params.get(2)).isEqualTo("subpath");
+        assertThat(params.get(3)).isEqualTo("ferrari");
+        assertThat(params.size()).isEqualTo(4);
+    }
+    
+    @Test
+    public void mapPathParamsSingleParam() {
+        final Map<String, String> params = RequestUtils.mapPathParams("/cars/red", "/cars/{color}");
+        assertThat(params.get("color")).isEqualTo("red");
+        assertThat(params.size()).isEqualTo(1);
+    }
+    
+    @Test
+    public void mapPathParamsMultipleParams() {
+        final Map<String, String> params = RequestUtils.mapPathParams("/cars/red/subpath/ferrari", "/cars/{color}/subpath/{brand}");
+        assertThat(params.get("color")).isEqualTo("red");
+        assertThat(params.get("brand")).isEqualTo("ferrari");
+        assertThat(params.size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void mapPathParamsMultipleParamsWithQueryParam() {
+        final Map<String, String> params = RequestUtils.mapPathParams("/cars/red/subpath/ferrari?name=Fletch", "/cars/{color}/subpath/{brand}");
+        assertThat(params.get("color")).isEqualTo("red");
+        assertThat(params.get("brand")).isEqualTo("ferrari");
+        assertThat(params.size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void mapPathParamsNoParams() {
+        final Map<String, String> params = RequestUtils.mapPathParams("/cars/red", "/cars/red");
+        assertThat(params.isEmpty()).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatch() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/segment1/segment2", "/cars/segment1/segment2/");
+        assertThat(matches).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatchDifferentPaths() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/subpath", "/carz/subpath");
+        assertThat(matches).isFalse();
+    }
+    
+    @Test
+    public void segmentsMatchWithPlaceholders() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}/{brand}", "/cars/red/BMW");
+        assertThat(matches).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatchTrailingSlash() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}/{brand}", "/cars/red/BMW/");
+        assertThat(matches).isTrue();
+    }
+    
+    @Test
+    public void segmentsMatchNoMatch() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}", "/cars/");
+        assertThat(matches).isFalse();
+    }
+    
+    @Test
+    public void segmentsMatchRealPathContainsMoreSegments() {
+        final boolean matches = RequestUtils.segmentsMatch("/cars/{color}", "/cars/red/BMW/");
+        assertThat(matches).isFalse();
+    }
+    
+    @Test
+    public void segmentsMatchNoMatchDifferentPaths() {
+        final boolean matches = RequestUtils.segmentsMatch("/candy/{color}/brands", "/cars/red/brands");
+        assertThat(matches).isFalse();
+    }
+    
 }

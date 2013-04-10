@@ -70,15 +70,23 @@ public class ParameterExtractorTest {
     public void extractPathParameter() throws Exception {
         when(route.getPath()).thenReturn("/cars/{id}");
         when(routeContext.getRequestPath()).thenReturn("/cars/2");
-        final Optional<?> param = ParameterExtractor.extractPathParam(routeContext, String.class);
+        final Optional<?> param = ParameterExtractor.extractPathParam(routeContext, "id", String.class);
         assertThat(param.get()).isEqualTo("2");
+    }
+    
+    @Test
+    public void extractPathParameters() throws Exception {
+        when(route.getPath()).thenReturn("/cars/{color}/subpath/{brand}");
+        when(routeContext.getRequestPath()).thenReturn("/cars/red/subpath/BMW");
+        assertThat(ParameterExtractor.extractPathParam(routeContext, "color", String.class).get()).isEqualTo("red");
+        assertThat(ParameterExtractor.extractPathParam(routeContext, "brand", String.class).get()).isEqualTo("BMW");
     }
 
     @Test
     public void extractPathParameterButNoParamInRequest() throws Exception {
         when(route.getPath()).thenReturn("/cars/{id}");
         when(routeContext.getRequestPath()).thenReturn("/c");
-        assertThat(ParameterExtractor.extractPathParam(routeContext, String.class).isPresent()).isFalse();
+        assertThat(ParameterExtractor.extractPathParam(routeContext, "id", String.class).isPresent()).isFalse();
     }
 
     @Test

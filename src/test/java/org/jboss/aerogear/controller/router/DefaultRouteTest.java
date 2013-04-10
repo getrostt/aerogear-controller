@@ -181,6 +181,24 @@ public class DefaultRouteTest {
         final Route route = new DefaultRoute(rd);
         assertThat(route.produces()).contains(MediaType.JSON);
     }
+    
+    @Test
+    public void matchesProducesMultiplePathParams() throws NoSuchMethodException {
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("/car/{color}/{brand}").on(GET).produces(MediaType.HTML).to(SampleController.class).find(null, null);
+        final Route route = new DefaultRoute(rd);
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList("*/*"));
+        assertThat(route.matches(RequestMethod.GET, "/car/red/Ford", acceptHeaders)).isTrue();
+    }
+    
+    @Test
+    public void matchesProducesMultiplePathParamsNoMatch() throws NoSuchMethodException {
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("/car/{color}/{brand}/{id}").on(GET).produces(MediaType.HTML).to(SampleController.class).find(null, null);
+        final Route route = new DefaultRoute(rd);
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList("*/*"));
+        assertThat(route.matches(RequestMethod.GET, "/car/red/Ford", acceptHeaders)).isFalse();
+    }
 
     private static Method indexMethod(final Class<?> targetClass, final String methodName) {
         Method m = null;

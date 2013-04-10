@@ -106,8 +106,8 @@ public class ParameterExtractor {
         if (addIfPresent(extractDefaultParam(type, defaultValue), paramName, map)) {
             return map;
         }
-        if (addIfPresent(extractPathParam(routeContext, type), paramName, map)) {
-            return map;
+        if (addIfPresent(extractPathParam(routeContext, paramName, type), paramName, map)) {
+             return map;
         } else {
             throw ExceptionBundle.MESSAGES.missingParameterInRequest(paramName);
         }
@@ -140,20 +140,18 @@ public class ParameterExtractor {
         throw ExceptionBundle.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
     }
     
-    /**
-     * Extracts a path parameter from the passed in request path.
-     * 
-     *
-     * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext} to extract a path parameter from.
-     * @param type
-     * @return {@code Optional<String>} containing the extracted path param if present in the request path.
-     */
-    public static Optional<?> extractPathParam(final RouteContext routeContext, Class<?> type) throws Exception {
+    public static Optional<?> extractPathParam(final RouteContext routeContext, final RequestParameter<?> param) throws Exception {
+        return extractPathParam(routeContext, param.getName(), param.getType());
+    }
+    
+    public static Optional<?> extractPathParam(final RouteContext routeContext, final String paramName, final Class<?> type) throws Exception {
         final String requestPath = routeContext.getRequestPath();
-        final int paramOffset = routeContext.getRoute().getPath().indexOf('{');
-        if (paramOffset != -1 && paramOffset < requestPath.length()) {
-            String pathParam = requestPath.subSequence(paramOffset, requestPath.length()).toString();
-            return Optional.of(createInstance(type, pathParam));
+        final Map<String, String> pathParams = RequestUtils.mapPathParams(requestPath, routeContext.getRoute().getPath());
+        if (pathParams.containsKey(paramName)) {
+            final String value = pathParams.get(paramName);
+            if (value != null) {
+                return Optional.of(createInstance(type, pathParams.get(paramName)));
+            }
         }
         return Optional.absent();
     }

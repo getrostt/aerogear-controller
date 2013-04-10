@@ -17,9 +17,12 @@
 
 package org.jboss.aerogear.controller.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -36,7 +39,10 @@ import com.google.common.base.Splitter;
  */
 public class RequestUtils {
     
+    private final static Pattern PATH_SEGMENT_PATTERN = Pattern.compile("/([^/]+)");
+    private final static Pattern PATH_PLACEHOLDER_PATTERN = Pattern.compile("/\\{?([^/}?]+)\\}?");
     private final static Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{([a-zA-Z]*)\\}");
+    private final static Pattern PATH_PATTERN = Pattern.compile("/(?:([^/]+))");
 
     private RequestUtils() {
     }
@@ -85,6 +91,68 @@ public class RequestUtils {
     }
     
     /**
+     * Extracts the path elements and returns a map indexed by the order in which
+     * the path elements appear.
+     * 
+     * @param path the path from which the path elements will be extracted/collected.
+     * @return {@code Map<Integer, String} indexed by the position of the path elements.
+     */
+    public static Map<Integer, String> extractPathSegments(final String path) {
+        final Matcher requestMatcher = PATH_PLACEHOLDER_PATTERN.matcher(path);
+        final Map<Integer, String> map = new HashMap<Integer, String>();
+        for (int i = 0; requestMatcher.find(); i++) {
+            map.put(i, requestMatcher.group(1));
+        }
+        return map;
+    }
+    
+    /**
+     * Extracts path parameter placeholders from the passed in path.
+     * 
+     * @param path the path from which the path elements will be extracted/collected.
+     * @return {@code Map<String, Integer} indexed name of the placeholder/variable name, and the value is the position 
+     *                    of this name in the path.
+     */
+    public static Map<String, Integer> extractPathVariableNames(final String path) {
+        final Matcher requestMatcher = PATH_SEGMENT_PATTERN.matcher(path);
+        final Map<String, Integer> map = new HashMap<String, Integer>();
+        for (int i = 0; requestMatcher.find(); i++) {
+            final String segment = requestMatcher.group(1);
+            if (segment.startsWith("{")) {
+                map.put(trimPlaceHolder(segment), i);
+            }
+        }
+        return map;
+    }
+    
+    private static String trimPlaceHolder(final String str) {
+        return str.substring(1, str.length()-1);
+    }
+    
+    /**
+     * Extracts path parameters from the passed-in request path.
+     * 
+     * @param requestPath the actual request path.
+     * @param configPath the configuration time path. This path can contain path variable placeholders which will
+     *                   be mapped to the corresponding request path values.
+     * @return {@code Map<String, String>} index by the name of the parameter, and the value is the value of the corresponding
+     *                   request path parameter.
+     */
+    public static Map<String, String> mapPathParams(final String requestPath, final String configPath) {
+        final Map<Integer, String> pathElementsMap = extractPathSegments(requestPath);
+        final Map<String, Integer> pathVariableNameMap = extractPathVariableNames(configPath);
+        
+        final Map<String, String> params = new HashMap<String, String>();
+        final Matcher configMatcher = PLACEHOLDER_PATTERN.matcher(configPath);
+        while (configMatcher.find()) {
+            final String paramName = configMatcher.group(1);
+            final String value = pathElementsMap.get(pathVariableNameMap.get(paramName));
+            params.put(paramName, value);
+        }
+        return params;
+    }
+
+    /**
      * Will extract any placeholders, {name}, from the passed-in string.
      * 
      * @param str the string from with placeholder names should be extracted.
@@ -115,5 +183,50 @@ public class RequestUtils {
         matcher.appendTail(sb);
         return sb.toString();
     }
-
+    
+    /**
+     * Determines whether to paths match in terms of having the same number of segments and the same segment names. 
+     * </p>
+     * @param placeHolderPath path that may contain placeholders.
+     * @param realPath the actual path of the request.
+     * @return {@code true} if the number of segments match and the segments names match.
+     */
+    public static boolean segmentsMatch(final String placeHolderPath, final String realPath) {
+        final List<String> placeholderSegments = pathSegements(placeHolderPath);
+        final List<String> realPathSegments = pathSegements(realPath);
+        if (placeholderSegments.size() != realPathSegments.size()) {
+            return false;
+        }
+        final int segments = placeholderSegments.size();
+        for (int i = 0; i < segments; i++ ) {
+            final String placeholderSegment = placeholderSegments.get(i);
+            final String realPathSegment = realPathSegments.get(i);
+            if (placeholderSegment.charAt(0) == '{') {
+                if (realPathSegment == null || realPathSegment.equals("")) {
+                    return false;
+                }
+            } else {
+                if (!placeholderSegment.equals(realPathSegment)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Returns a List of segments for the passed-in path.
+     * <p/>
+     * @param path which can include placeholders which will be included as-is, for example {placeholderName}
+     * @return {@code List<String>} containing the segments of the path.
+     */
+    public static List<String> pathSegements(final String path) {
+        final List<String> segments = new ArrayList<String>();
+        final Matcher m = PATH_PATTERN.matcher(path);
+        while (m.find()) {
+            segments.add(m.group(1));
+        }
+        return segments;
+    }
+    
 }
