@@ -51,7 +51,7 @@ public class MockResponder {
     private JspViewResponder jspResponder;
     @Mock
     private HtmlViewResponder htmlResponder;
-    @Mock
+    @Spy
     private ErrorViewResponder errorViewResponder;
     private final List<Responder> responderList = new LinkedList<Responder>();
 
