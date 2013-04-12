@@ -82,15 +82,7 @@ public class DefaultRoute implements Route {
     }
 
     private boolean matchesProduces(final Set<String> acceptHeaders) {
-        if (acceptHeaders.isEmpty() || acceptHeaders.contains(MediaType.ANY)) {
-            return true;
-        }
-        for (MediaType mediaType : produces) {
-            if (acceptHeaders.contains(mediaType.getType())) {
-                return true;
-            }
-        }
-        return false;
+        return RequestUtils.acceptsMediaType(acceptHeaders, produces);
     }
 
     private boolean isPathCompatible(String realPath) {

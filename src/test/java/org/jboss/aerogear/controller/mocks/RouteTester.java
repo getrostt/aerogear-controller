@@ -52,6 +52,7 @@ import org.jboss.aerogear.controller.router.rest.JsonResponder;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationHandler;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationStrategy;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
+import org.jboss.aerogear.controller.util.RequestUtils;
 import org.jboss.aerogear.controller.view.JspViewResponder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -104,12 +105,7 @@ public class RouteTester {
     }
 
     public RouteTester acceptHeader(final MediaType mediaType) {
-        mockRequest.acceptHeader(mediaType);
-        return this;
-    }
-
-    public RouteTester acceptHeaders(final String... acceptHeaders) {
-        mockRequest.acceptHeaders(acceptHeaders);
+        mockRequest.acceptHeader(mediaType.getType());
         return this;
     }
 
@@ -122,7 +118,7 @@ public class RouteTester {
         mockRequest.setRequestURI(path);
         mockRequest.setRequestURL(path);
         return routes.routeFor(RequestMethod.valueOf(mockRequest.getRequest().getMethod()), path,
-                mockRequest.getAcceptHeaders());
+                RequestUtils.extractAcceptHeader(mockRequest.getRequest()));
     }
 
     public InvocationResult processGetRequest(final String path) throws Exception {

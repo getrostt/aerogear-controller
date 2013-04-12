@@ -20,7 +20,9 @@ package org.jboss.aerogear.controller.util;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -94,6 +96,47 @@ public class RequestUtilsTest {
     public void extractAcceptsHeader() {
         when(request.getHeader("Accept")).thenReturn("application/json, application/xml");
         assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.getType(), "application/xml");
+        assertThat(RequestUtils.extractAcceptHeader(request).size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractAcceptsHeaderWithQualityFactor() {
+        when(request.getHeader("Accept")).thenReturn("application/json; q=0.3, application/xml");
+        assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.getType(), "application/xml");
+        assertThat(RequestUtils.extractAcceptHeader(request).size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractAcceptsHeaderAny() {
+        when(request.getHeader("Accept")).thenReturn("*/*,text/html;level=100;custom=someValue");
+        assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.ANY, "text/html");
+        assertThat(RequestUtils.extractAcceptHeader(request).size()).isEqualTo(2);
+    }
+    
+    @Test
+    public void extractAcceptsSubtypeAny() {
+        when(request.getHeader("Accept")).thenReturn("text/*");
+        assertThat(RequestUtils.extractAcceptHeader(request)).contains("text/*");
+        assertThat(RequestUtils.extractAcceptHeader(request).size()).isEqualTo(1);
+    }
+    
+    @Test
+    public void acceptsMediaType() {
+        assertThat(RequestUtils.acceptsMediaType(acceptHeaders("text/*;level=100,text/plain"), produces(MediaType.HTML))).isTrue();
+    }
+    
+    @Test
+    public void acceptsMediaTypeAny() {
+        assertThat(RequestUtils.acceptsMediaType(acceptHeaders("*/*, application/json"), produces(MediaType.HTML))).isTrue();
+    }
+    
+    private Set<String> acceptHeaders(String... type) {
+        when(request.getHeader("Accept")).thenReturn("text/*");
+        return RequestUtils.extractAcceptHeader(request);
+    }
+    
+    private Set<MediaType> produces(MediaType... mediaTypes) {
+        return new HashSet<MediaType>(Arrays.asList(mediaTypes));
     }
     
     @Test

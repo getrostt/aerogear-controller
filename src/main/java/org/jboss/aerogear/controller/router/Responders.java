@@ -27,6 +27,8 @@ import javax.inject.Inject;
 import org.jboss.aerogear.controller.log.ExceptionBundle;
 import org.jboss.aerogear.controller.util.RequestUtils;
 
+import com.google.common.base.Optional;
+
 /**
  * Handles responding from a Route invocation by delegating to the appropriate {@link Responder}.
  * 
@@ -58,13 +60,10 @@ public class Responders {
     public void respond(final RouteContext routeContext, final Object result) throws Exception {
         final Set<String> acceptHeaders = RequestUtils.extractAcceptHeader(routeContext.getRequest());
         final Set<MediaType> routeMediaTypes = routeContext.getRoute().produces();
-        for (String acceptHeader : acceptHeaders) {
-            for (MediaType mediaType : routeMediaTypes) {
-                if (mediaType.getType().equals(acceptHeader)) {
-                    if (respond(mediaType, result, routeContext)) {
-                        return;
-                    }
-                }
+        final Optional<MediaType> optionalMediaType = RequestUtils.getAcceptedMediaType(acceptHeaders, routeMediaTypes);
+        if (optionalMediaType.isPresent()) {
+            if (respond(optionalMediaType.get(), result, routeContext)) {
+                return;
             }
         }
 

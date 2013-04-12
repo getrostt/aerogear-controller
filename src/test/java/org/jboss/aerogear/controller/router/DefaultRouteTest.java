@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.fest.assertions.Fail;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.util.RequestUtils;
 import org.junit.Test;
 
 public class DefaultRouteTest {
@@ -160,7 +161,15 @@ public class DefaultRouteTest {
         final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList("*/*"));
         assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isTrue();
     }
-
+    
+    @Test
+    public void matchesProducesSubtype() throws NoSuchMethodException {
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("/car/{id}").on(GET).produces(MediaType.HTML).to(SampleController.class).index();
+        final Route route = new DefaultRoute(rd);
+        assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders("text/*"))).isTrue();
+    }
+    
     @Test
     public void toStringTest() {
         final RouteDescriptor rd = new RouteDescriptor();
