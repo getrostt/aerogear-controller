@@ -19,6 +19,7 @@ package org.jboss.aerogear.controller.router.rest;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.aerogear.controller.router.MediaType;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Responder;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.error.ErrorResponse;
@@ -48,7 +49,10 @@ public class JsonResponder extends AbstractRestResponder {
     }
 
     private void writeJsonResponse(final Object entity, final RouteContext routeContext) throws Exception {
-        mapper.writeValue(routeContext.getResponse().getWriter(), entity);
+        String requestMethod = routeContext.getRequest().getMethod() ;
+        if (requestMethod != null && !requestMethod.equalsIgnoreCase(RequestMethod.OPTIONS.toString())) {
+            mapper.writeValue(routeContext.getResponse().getWriter(), entity);
+        }
     }
 
     /* (non-Javadoc)

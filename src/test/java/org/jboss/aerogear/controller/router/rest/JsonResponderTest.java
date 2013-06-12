@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.aerogear.controller.router.MediaType;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.Routes;
@@ -78,7 +79,7 @@ public class JsonResponderTest {
         final StringWriter stringWriter = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(printWriter);
-
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         new JsonResponder().respond(new Entity("Larry", 38), routeContext);
         verify(response).getWriter();
         verify(response).setCharacterEncoding("UTF-8");
@@ -94,6 +95,7 @@ public class JsonResponderTest {
         final StringWriter stringWriter = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(printWriter);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
 
         ErrorResponseImpl errorResponse = new ErrorResponseImpl(HttpServletResponse.SC_NOT_FOUND, new Exception("not found"));
         new JsonResponder().respond(errorResponse, routeContext);
